@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'jetts'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="pages.tx_jetts_template">Template</label>
+			<label index="pages.tx_jetts_subtemplate">Template for subpages</label>
+		</languageKey>
+	</data>
+</T3locallang>

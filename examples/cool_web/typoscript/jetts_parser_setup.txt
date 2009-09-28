@@ -1,0 +1,79 @@
+page = PAGE
+
+page.includeCSS {
+  file1 = typo3conf/ext/jetts/examples/cool_web/style.css
+}
+
+page.config.language = fr
+
+# Defines the TEMPLATE object and sets the Jetts Parser
+page.10 = TEMPLATE
+page.10.template < plugin.tx_jetts_parser
+
+page.10.template {
+  content = FILE
+  content.file = typo3conf/ext/jetts/examples/cool_web/index.html
+
+  # Localization file
+  locallangFile = typo3conf/ext/jetts/examples/cool_web/locallang/locallang.xml
+
+  # Subparts
+  subparts {
+    DOCUMENT_BODY = //body
+    MENU_OBEN = //div[@id='menuOben']
+    MENU_UNTEN = //div[@id='menuUnten']
+    INHALT = //div[@id ='leftPan']/text()
+    INHALT_RECHTS = //div[@id ='rightPan']/div/text()
+  }
+
+  # Markers
+  marks {
+    LOGO = //div[@id='topHeaderPan']/a/img/@src
+    FOOTER_LOGO = //div[@id='footerPan']/a/img/@src
+    HOME_TITLE = //li[@class='home']/a/@title
+    HOME_ALT = //li[@class='home']/a/@alt
+    CONTACT_TITLE = //li[@class='contact']/a/@title
+    CONTACT_ALT = //li[@class='contact']/a/@alt
+  }
+  
+  # stdWraps
+  stdWraps {
+  }
+}
+
+page.10 {
+  workOnSubpart = DOCUMENT_BODY
+
+  subparts {
+    MENU_OBEN = HMENU
+    MENU_OBEN {
+      special = directory
+      special.value = {$menuOben}
+      1 = TMENU
+      1 {
+        NO.linkWrap = | &nbsp;
+        NO.doNotShowLink = 0
+      }
+    }
+    MENU_UNTEN = HMENU
+    MENU_UNTEN {
+      special = directory
+      special.value = {$menuUnten}
+      1 = TMENU
+      1 {
+        NO.linkWrap = | &nbsp;
+        NO.doNotShowLink = 0
+      }
+    }
+    INHALT = CONTENT
+    INHALT < styles.content.get
+    INHALT_RECHTS = CONTENT
+    INHALT_RECHTS < styles.content.getRight
+  }
+  marks{
+    LOGO = TEXT
+    LOGO.value = typo3conf/ext/jetts/examples/cool_web/images/logo.jpg
+    FOOTER_LOGO = TEXT
+    FOOTER_LOGO.value = typo3conf/ext/jetts/examples/cool_web/images/footerlogo.gif
+  }
+}
