@@ -56,14 +56,41 @@ class tx_jetts_parser extends tslib_pibase {
 	 * 
 	 */
 	public function parse($conf) {
-		$this->conf = $conf;
 		$starttime = microtime();
+		
+//		$conf['cache'] = 1;
+//		$conf['cache.']['fastCache'] = 1;
+		
+		// try to fetch from cache > defaults to true
+		$conf['cache'] = (isset($conf['cache'])) ? intval($conf['cache']) : 1;
+		if($conf['cache'] == 1) { // cache on
+			$hashConf = $conf;
+			$hashConf['sys_language_uid'] = $this->LLkey;
+			$hashContent = serialize($hashConf);
+			
+			// activate fastCache > defaults to false
+			$conf['cache.']['fastCache'] = (isset($conf['cache.']['fastCache'])) ? intval($conf['cache.']['fastCache']) : 0;
+			if($conf['cache.']['fastCache'] == 0) { // fastCache off, check content
+				$content = $this->cObj->cObjGetSingle($conf['content'], $conf['content.'], 'content');
+				$hashContent .= $content;
+			}
+			$hash = md5($hashContent);
+			
+			$hashedContent = $GLOBALS['TSFE']->sys_page->getHash($hash);
+			
+			if ($hashedContent)	{
+				$hashedContent = unserialize($hashedContent);
+				return $hashedContent['content'];
+			}
+		}
 
+		// nothing in cache > continue
+		$this->conf = $conf;
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		
-		//$content = $this->local_cObj->fileResource($this->conf['templateFile']);
-		$content = $this->cObj->cObjGetSingle($this->conf['content'], $this->conf['content.'], 'content');
-
+		// content is already loaded if cache=1 && fastCache=0, otherwise, load it
+		if(!$content) $content = $this->cObj->cObjGetSingle($this->conf['content'], $this->conf['content.'], 'content');
+		
 		if($content) {
 			// first xpath magic
 			$type = ($this->conf['type'] == 'XML') ? 'XML' : 'HTML';
@@ -79,8 +106,16 @@ class tx_jetts_parser extends tslib_pibase {
 
 			// then locallang substitution
 			$content = $this->substituteLocallangMarks($content);
-
+			
+			// store in cache
+			$GLOBALS['TSFE']->sys_page->storeHash($hash,serialize(
+				array(
+					'content' => $content
+				)
+			),'tx_jetts_parser');			
+			
 			t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime()-$starttime)));
+			
 			return $content;
 
 		}else{
