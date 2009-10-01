@@ -108,11 +108,13 @@ class tx_jetts_parser extends tslib_pibase {
 			$content = $this->substituteLocallangMarks($content);
 			
 			// store in cache
-			$GLOBALS['TSFE']->sys_page->storeHash($hash,serialize(
-				array(
-					'content' => $content
-				)
-			),'tx_jetts_parser');			
+			if($hash) {
+				$GLOBALS['TSFE']->sys_page->storeHash($hash,serialize(
+					array(
+						'content' => $content
+					)
+				),'tx_jetts_parser');
+			}			
 			
 			t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime()-$starttime)));
 			
