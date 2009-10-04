@@ -58,40 +58,48 @@ class tx_jetts_parser extends tslib_pibase {
 	public function parse($conf) {
 		$starttime = microtime();
 		
-//		$conf['cache'] = 1;
-//		$conf['cache.']['fastCache'] = 1;
-		
-		// try to fetch from cache > defaults to true
-		$conf['cache'] = (isset($conf['cache'])) ? intval($conf['cache']) : 1;
-		if($conf['cache'] == 1) { // cache on
+		// Check if the cache is on. By defaut the cache is on
+		$cache = (isset($conf['cache']) ? intval($conf['cache']) : 1);
+
+		if ($cache == 1) {
+      // Add the language key and serialize the configuration
 			$hashConf = $conf;
-			$hashConf['sys_language_uid'] = $this->LLkey;
+			$hashConf['LLkey'] = $this->LLkey;
 			$hashContent = serialize($hashConf);
 			
-			// activate fastCache > defaults to false
-			$conf['cache.']['fastCache'] = (isset($conf['cache.']['fastCache'])) ? intval($conf['cache.']['fastCache']) : 0;
-			if($conf['cache.']['fastCache'] == 0) { // fastCache off, check content
+			// Check if the content must be added to the hashContent. By defaut, it is added.
+			$addContentToHash = (isset($conf['cache.']['addContentToHash']) ? intval($conf['cache.']['addContentToHash']) : 1);
+			if ($addContentToHash == 1) {
 				$content = $this->cObj->cObjGetSingle($conf['content'], $conf['content.'], 'content');
 				$hashContent .= $content;
 			}
+			// Compute the hash key
 			$hash = md5($hashContent);
 			
-			$hashedContent = $GLOBALS['TSFE']->sys_page->getHash($hash);
+			// Get the cached content
+			$cachedContent = $GLOBALS['TSFE']->sys_page->getHash($hash);
 			
-			if ($hashedContent)	{
-				$hashedContent = unserialize($hashedContent);
-				return $hashedContent['content'];
+			// If the cached context exists, return it
+			if ($cachedContent)	{
+				$cachedContent = unserialize($cachedContent);
+				
+			  t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
+			  
+				return $cachedContent['content'];
 			}
 		}
 
-		// nothing in cache > continue
+		// The cache is either off or has returned nothing
 		$this->conf = $conf;
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		
-		// content is already loaded if cache=1 && fastCache=0, otherwise, load it
-		if(!$content) $content = $this->cObj->cObjGetSingle($this->conf['content'], $this->conf['content.'], 'content');
+		// Load the content if not already loaded. It is loaded  when cache=1 && addContentToHash=1.
+		if (!$content) {
+      $content = $this->cObj->cObjGetSingle($this->conf['content'], $this->conf['content.'], 'content');
+		}
 		
-		if($content) {
+		// Process the content if it exists
+		if ($content) {
 			// first xpath magic
 			$type = ($this->conf['type'] == 'XML') ? 'XML' : 'HTML';
 
@@ -107,20 +115,20 @@ class tx_jetts_parser extends tslib_pibase {
 			// then locallang substitution
 			$content = $this->substituteLocallangMarks($content);
 			
-			// store in cache
-			if($hash) {
-				$GLOBALS['TSFE']->sys_page->storeHash($hash,serialize(
+			// Store the content in the cache
+			if ($hash) {
+				$GLOBALS['TSFE']->sys_page->storeHash($hash, serialize(
 					array(
 						'content' => $content
 					)
 				),'tx_jetts_parser');
 			}			
 			
-			t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime()-$starttime)));
+			t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
 			
 			return $content;
 
-		}else{
+		} else {
 			t3lib_div::devLog('No template specified', $this->extKey, '3');
 		}
 	}
@@ -133,26 +141,28 @@ class tx_jetts_parser extends tslib_pibase {
 	 * @param	string		$type: the type of template XML or HTML (defaults to HTML)
 	 * @return	void
 	 */
-	public function initTemplate($templateCode, $conf=false, $type='HTML') {
+	public function initTemplate($templateCode, $conf = FALSE, $type = 'HTML') {
 		
 		// if you use this plugin in your own plugin, $conf will override TS conf
-		if($conf) $this->conf = $conf;
+		if ($conf) {
+      $this->conf = $conf;
+    }
 		
 		$this->type = $type;		
 		$this->DomDoc = new DOMDocument();
 		
 		// replace windows and mac newlines by unix newline
-		$mac_newline = "\r";
-		$win_newline = "\r\n";
-		$templateCode = str_replace($win_newline, "\n", $templateCode);
-		$templateCode = str_replace($mac_newline, "\n", $templateCode);
+		$mac_newline = chr(13);
+		$win_newline = chr(13) . chr(10);
+		$templateCode = str_replace($win_newline, chr(10), $templateCode);
+		$templateCode = str_replace($mac_newline, chr(10), $templateCode);
 		
 		// XML compliance : replaces & in templateCode by &amp; but preserve entities
 		$templateCode = preg_replace('/&(?![a-zA-Z0-9#]+;{1})/', '&amp;', $templateCode);
 
-		if($this->type == 'XML') {
+		if ($this->type == 'XML') {
 			$this->DomDoc->loadXML($templateCode);
-		}else{
+		} else {
 			$this->DomDoc->loadHTML($templateCode);
 		}
 		
@@ -166,9 +176,9 @@ class tx_jetts_parser extends tslib_pibase {
 	 * @return XML or HTML content
 	 */
 	public function saveTemplate() {
-		if($this->type = 'XML') {
+		if ($this->type = 'XML') {
 			return $this->DomDoc->saveXML();
-		}else{
+		} else {
 			return $this->DomDoc->saveHTML();
 		}
 	}
@@ -183,13 +193,13 @@ class tx_jetts_parser extends tslib_pibase {
 	 * @return	DOMDocument with subparts inserted in relevant nodes
 	 */
 	public function createSubparts() {
-		if($this->conf['subparts.']) {
-			foreach($this->conf['subparts.'] as $key => $subpart) {
+		if ($this->conf['subparts.']) {
+			foreach ($this->conf['subparts.'] as $key => $subpart) {
 				$elements = $this->xpathQuery($subpart);
-				if($elements) {
+				if ($elements) {
 					$beginMark = new DOMComment('###' . $key . '### begin');
 					$endMark = new DOMComment('###' . $key . '### end');
-					foreach($elements as $el) {
+					foreach ($elements as $el) {
 						$el->insertBefore($beginMark, $el->firstChild);
 						$el->appendChild($endMark);
 					}
@@ -212,13 +222,13 @@ class tx_jetts_parser extends tslib_pibase {
 	 * @return	DOMDocument with marks inserted in relevant nodes
 	 */
 	public function createMarks() {
-		if($this->conf['marks.']) {
-			foreach($this->conf['marks.'] as $key => $mark) {
+		if ($this->conf['marks.']) {
+			foreach ($this->conf['marks.'] as $key => $mark) {
 
 				$elements = $this->xpathQuery($mark);
 
-				if($elements) {
-					foreach($elements as $el) {
+				if ($elements) {
+					foreach ($elements as $el) {
 						$el->nodeValue = '###' . $key . '###';
 					}
 				}
@@ -239,14 +249,14 @@ class tx_jetts_parser extends tslib_pibase {
 	 * @return	DOMDocument with stdWrap executed on found nodes
 	 */
 	function stdWraps() {
-		if($this->conf['stdWraps.']) {
-			foreach($this->conf['stdWraps.'] as $key => $stdWrap) {
-				if(!is_array($stdWrap)) {
+		if ($this->conf['stdWraps.']) {
+			foreach ($this->conf['stdWraps.'] as $key => $stdWrap) {
+				if (!is_array($stdWrap)) {
 					
 					$elements = $this->xpathQuery($stdWrap);
 					
-					if($elements) {
-						foreach($elements as $el) {
+					if ($elements) {
+						foreach ($elements as $el) {
 							$el->nodeValue = $this->cObj->stdWrap($el->nodeValue, $this->conf['stdWraps.'][$key . '.']);
 						}
 					}
@@ -266,9 +276,9 @@ class tx_jetts_parser extends tslib_pibase {
 	 */
 	public function substituteLinks() {
 		//select all attributes starting with 'index.php?id=' (is it too greedy?)
-		$elements = $this->xpath->query("//*/@*[starts-with(.,'index.php?id=')]");
+		$elements = $this->xpath->query('//*/@*[starts-with(.,\'index.php?id=\')]');
 		
-		foreach($elements as $el) {
+		foreach ($elements as $el) {
 			$query = parse_url($el->nodeValue);
 			parse_str($query['query'], $params);
 			
@@ -298,7 +308,7 @@ class tx_jetts_parser extends tslib_pibase {
 	 */
 	public function substituteLocallangMarks($content) {
 		
-		if($this->conf['locallangFile']) {
+		if ($this->conf['locallangFile']) {
 			
 			$LLfile = $this->conf['locallangFile'];
 		
@@ -312,7 +322,7 @@ class tx_jetts_parser extends tslib_pibase {
 				$LLObj->init($this->LLkey);
 				$LL = $LLObj->includeLLFile($LLfile, 0);
 		
-				if($LL) {
+				if ($LL) {
 					foreach($LL['default'] as $key => $label) {
 						$markerKey = str_replace('.', '_', $key);
 						$markerKey = strtoupper($markerKey);
@@ -321,7 +331,7 @@ class tx_jetts_parser extends tslib_pibase {
 				}
 				
 				$content = $this->local_cObj->substituteMarkerArray($content, $markerArray);
-			}else{
+			} else {
 				t3lib_div::devLog('locallang file not found', $this->extKey, '3', $LLfile);
 			}
 		}
@@ -331,12 +341,12 @@ class tx_jetts_parser extends tslib_pibase {
 	
 	function xpathQuery($query) {
 		$elements = @$this->xpath->query($query);
-		if($elements) {
-			if($elements->length == 0) {
+		if ($elements) {
+			if ($elements->length == 0) {
 				t3lib_div::devLog('xpath returns no result', $this->extKey, '1', array($query));
 			}
 			return $elements;
-		}else{
+		} else {
 			t3lib_div::devLog('invalid xpath query', $this->extKey, '2', array($query));
 		}
 	}

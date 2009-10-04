@@ -23,7 +23,7 @@ page.10.template {
     MENU_OBEN = //div[@id='menuOben']
     MENU_UNTEN = //div[@id='menuUnten']
     INHALT = //div[@id ='leftPan']/text()
-    INHALT_RECHTS = //div[@id ='rightPan']/div/text()
+    INHALT_RECHTS = //div[@id ='rightPan']/text()
   }
 
   # Markers
