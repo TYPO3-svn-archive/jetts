@@ -26,17 +26,13 @@ require_once (t3lib_extMgm::extPath('jetts') . 'pi/class.tx_jetts_parser.php');
 
 
 /**
- * Plugin 'pi' for the 'jetts' extension.
+ * Plugin 'selector' for the 'jetts' extension.
  *
  * @author	 <contact@ilomedia.net>
  * @package	TYPO3
  * @subpackage	tx_jetts
  */
 class tx_jetts_selector extends tx_jetts_parser {
-	var $prefixId      = 'tx_jetts_selector';		// Same as class name
-	var $scriptRelPath = 'pi/class.tx_jetts_selector.php';	// Path to this script relative to the extension dir.
-	var $extKey        = 'jetts';	// The extension key.
-	var $pi_checkCHash = true;
 	
 	/**
 	 * The main method of the PlugIn

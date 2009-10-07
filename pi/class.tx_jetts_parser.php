@@ -22,21 +22,15 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
-
 
 /**
- * Plugin 'pi' for the 'jetts' extension.
+ * Plugin 'parser' for the 'jetts' extension.
  *
  * @author	 <contact@ilomedia.net>
  * @package	TYPO3
  * @subpackage	tx_jetts
  */
-class tx_jetts_parser extends tslib_pibase {
-	var $prefixId      = 'tx_jetts_parser';		// Same as class name
-	var $scriptRelPath = 'pi/class.tx_jetts_parser.php';	// Path to this script relative to the extension dir.
-	var $extKey        = 'jetts';	// The extension key.
-	var $pi_checkCHash = true;
+class tx_jetts_parser {
 	
 	/**
 	 * The main method of the PlugIn
@@ -83,7 +77,7 @@ class tx_jetts_parser extends tslib_pibase {
 			if ($cachedContent)	{
 				$cachedContent = unserialize($cachedContent);
 				
-			  t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
+			  if(TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
 			  
 				return $cachedContent['content'];
 			}
@@ -91,7 +85,7 @@ class tx_jetts_parser extends tslib_pibase {
 
 		// The cache is either off or has returned nothing
 		$this->conf = $conf;
-		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
+		$this->cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		
 		// Load the content if not already loaded. It is loaded  when cache=1 && addContentToHash=1.
 		if (!$content) {
@@ -124,12 +118,12 @@ class tx_jetts_parser extends tslib_pibase {
 				),'tx_jetts_parser');
 			}			
 			
-			t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
+			if(TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
 			
 			return $content;
 
 		} else {
-			t3lib_div::devLog('No template specified', $this->extKey, '3');
+			if(TYPO3_DLOG) t3lib_div::devLog('No template specified', $this->extKey, '3');
 		}
 	}
 	
@@ -288,7 +282,7 @@ class tx_jetts_parser extends tslib_pibase {
 			$additionalParams = http_build_query($params);
 			if($additionalParams) $additionalParams = '&' . $additionalParams;
 			
-			$url = $this->local_cObj->typoLink_URL(
+			$url = $this->cObj->typoLink_URL(
 				array(
 					'parameter' => $parameter,
 					'additionalParams' => $additionalParams,
@@ -313,7 +307,7 @@ class tx_jetts_parser extends tslib_pibase {
 			$LLfile = $this->conf['locallangFile'];
 		
 			// check if locallang file exists
-			if($this->local_cObj->fileResource($LLfile)) {
+			if($this->cObj->fileResource($LLfile)) {
 				
 				$markerArray = array();
 								
@@ -330,9 +324,9 @@ class tx_jetts_parser extends tslib_pibase {
 					}
 				}
 				
-				$content = $this->local_cObj->substituteMarkerArray($content, $markerArray);
+				$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 			} else {
-				t3lib_div::devLog('locallang file not found', $this->extKey, '3', $LLfile);
+				if(TYPO3_DLOG) t3lib_div::devLog('locallang file not found', $this->extKey, '3', $LLfile);
 			}
 		}
 		
@@ -343,11 +337,11 @@ class tx_jetts_parser extends tslib_pibase {
 		$elements = @$this->xpath->query($query);
 		if ($elements) {
 			if ($elements->length == 0) {
-				t3lib_div::devLog('xpath returns no result', $this->extKey, '1', array($query));
+				if(TYPO3_DLOG) t3lib_div::devLog('xpath returns no result', $this->extKey, '1', array($query));
 			}
 			return $elements;
 		} else {
-			t3lib_div::devLog('invalid xpath query', $this->extKey, '2', array($query));
+			if(TYPO3_DLOG) t3lib_div::devLog('invalid xpath query', $this->extKey, '2', array($query));
 		}
 	}
 }
