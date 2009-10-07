@@ -61,16 +61,16 @@ class tx_jetts_selector extends tx_jetts_parser {
 	
 	function getkeyTemplate() {
 	
-		// if a mapping is defined on page return it
-		if($GLOBALS['TSFE']->page['tx_jetts_template'] != '') {
+		// if a mapping is defined on page returns it
+		if ($GLOBALS['TSFE']->page['tx_jetts_template'] != '') {
 			return $GLOBALS['TSFE']->page['tx_jetts_template'];
-		}else{
+		} else {
 			// walks through rootline to find a mapping defined for a page or subpages
-			foreach($GLOBALS['TSFE']->rootLine as $level) {
+			foreach ($GLOBALS['TSFE']->rootLine as $level) {
 				$p = $GLOBALS['TSFE']->sys_page->getPage($level['uid']);
-				if($p['tx_jetts_subtemplate'] != '') {
+				if ($p['tx_jetts_subtemplate'] != '') {
 					return $p['tx_jetts_subtemplate'];
-				}elseif($p['tx_jetts_template'] != '') {
+				} elseif ($p['tx_jetts_template'] != '') {
 					return $p['tx_jetts_template'];
 				}
 			}

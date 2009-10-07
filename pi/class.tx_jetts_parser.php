@@ -41,6 +41,7 @@ class tx_jetts_parser {
 	 * @return	The content that is displayed on the website
 	 */
 	function main($content,$conf)	{
+
 		return $this->parse($conf);
 	}
 	
@@ -52,6 +53,14 @@ class tx_jetts_parser {
 	public function parse($conf) {
 		$starttime = microtime();
 		
+    // Set the localization keys
+		if ($GLOBALS['TSFE']->config['config']['language'])	{
+			$this->LLkey = $GLOBALS['TSFE']->config['config']['language'];
+			if ($GLOBALS['TSFE']->config['config']['language_alt'])	{
+				$this->altLLkey = $GLOBALS['TSFE']->config['config']['language_alt'];
+			}
+		}
+
 		// Check if the cache is on. By defaut the cache is on
 		$cache = (isset($conf['cache']) ? intval($conf['cache']) : 1);
 
@@ -77,8 +86,8 @@ class tx_jetts_parser {
 			if ($cachedContent)	{
 				$cachedContent = unserialize($cachedContent);
 				
-				if(TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
-			  
+				if (TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
+
 				return $cachedContent['content'];
 			}
 		}
@@ -117,12 +126,12 @@ class tx_jetts_parser {
 				),'tx_jetts_parser');
 			}			
 			
-			if(TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
+			if (TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
 			
 			return $content;
 
 		} else {
-			if(TYPO3_DLOG) t3lib_div::devLog('No template specified', $this->extKey, '3');
+			if (TYPO3_DLOG) t3lib_div::devLog('No template specified', $this->extKey, '3');
 		}
 	}
 	
@@ -325,7 +334,7 @@ class tx_jetts_parser {
 				
 				$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 			} else {
-				if(TYPO3_DLOG) t3lib_div::devLog('locallang file not found', $this->extKey, '3', $LLfile);
+				if (TYPO3_DLOG) t3lib_div::devLog('locallang file not found', $this->extKey, '3', $LLfile);
 			}
 		}
 		
@@ -336,11 +345,11 @@ class tx_jetts_parser {
 		$elements = @$this->xpath->query($query);
 		if ($elements) {
 			if ($elements->length == 0) {
-				if(TYPO3_DLOG) t3lib_div::devLog('xpath returns no result', $this->extKey, '1', array($query));
+				if (TYPO3_DLOG) t3lib_div::devLog('xpath returns no result', $this->extKey, '1', array($query));
 			}
 			return $elements;
 		} else {
-			if(TYPO3_DLOG) t3lib_div::devLog('invalid xpath query', $this->extKey, '2', array($query));
+			if (TYPO3_DLOG) t3lib_div::devLog('invalid xpath query', $this->extKey, '2', array($query));
 		}
 	}
 }
