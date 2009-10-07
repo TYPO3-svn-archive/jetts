@@ -77,7 +77,7 @@ class tx_jetts_parser {
 			if ($cachedContent)	{
 				$cachedContent = unserialize($cachedContent);
 				
-			  if(TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
+				if(TYPO3_DLOG) t3lib_div::devLog('time taken', $this->extKey, '1', array('totaltime'=>(microtime() - $starttime)));
 			  
 				return $cachedContent['content'];
 			}
@@ -85,11 +85,10 @@ class tx_jetts_parser {
 
 		// The cache is either off or has returned nothing
 		$this->conf = $conf;
-		$this->cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		
 		// Load the content if not already loaded. It is loaded  when cache=1 && addContentToHash=1.
 		if (!$content) {
-      $content = $this->cObj->cObjGetSingle($this->conf['content'], $this->conf['content.'], 'content');
+			$content = $this->cObj->cObjGetSingle($this->conf['content'], $this->conf['content.'], 'content');
 		}
 		
 		// Process the content if it exists
