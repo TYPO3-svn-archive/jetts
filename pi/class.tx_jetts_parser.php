@@ -40,7 +40,7 @@ class tx_jetts_parser {
 	 * @param	array		$conf: The PlugIn configuration
 	 * @return	The content that is displayed on the website
 	 */
-	function main($content,$conf)	{
+	public function main($content,$conf)	{
 
 		return $this->parse($conf);
 	}
@@ -52,7 +52,7 @@ class tx_jetts_parser {
 	 */
 	public function parse($conf) {
 		$starttime = microtime();
-		
+
     // Set the localization keys
 		if ($GLOBALS['TSFE']->config['config']['language'])	{
 			$this->LLkey = $GLOBALS['TSFE']->config['config']['language'];
@@ -178,7 +178,7 @@ class tx_jetts_parser {
 	 * @return XML or HTML content
 	 */
 	public function saveTemplate() {
-		if ($this->type = 'XML') {
+		if ($this->type == 'XML') {
 			return $this->DomDoc->saveXML();
 		} else {
 			return $this->DomDoc->saveHTML();
@@ -201,7 +201,17 @@ class tx_jetts_parser {
 				if ($elements) {
 					$beginMark = new DOMComment('###' . $key . '### begin');
 					$endMark = new DOMComment('###' . $key . '### end');
+
 					foreach ($elements as $el) {
+            // Suppress the comment marker if they exist
+            if ($el->hasChildNodes()) {
+              foreach($el->childNodes as $childNode) {
+                if ($childNode->nodeType == XML_COMMENT_NODE && strpos($childNode->nodeValue, '###' . $key . '###') !== FALSE) {
+                  $el->removeChild($childNode);
+                }
+              }
+            }
+
 						$el->insertBefore($beginMark, $el->firstChild);
 						$el->appendChild($endMark);
 					}
@@ -313,17 +323,17 @@ class tx_jetts_parser {
 		if ($this->conf['locallangFile']) {
 			
 			$LLfile = $this->conf['locallangFile'];
-		
+
 			// check if locallang file exists
 			if($this->cObj->fileResource($LLfile)) {
 				
 				$markerArray = array();
-								
+
 				include_once($BACK_PATH.'typo3/sysext/lang/lang.php');
 				$LLObj = t3lib_div::makeInstance('language');				
 				$LLObj->init($this->LLkey);
 				$LL = $LLObj->includeLLFile($LLfile, 0);
-		
+
 				if ($LL) {
 					foreach($LL['default'] as $key => $label) {
 						$markerKey = str_replace('.', '_', $key);
@@ -331,7 +341,7 @@ class tx_jetts_parser {
 						$markerArray['###' . $markerKey . '###'] = $LLObj->getLLL($key, $LL);
 					}
 				}
-				
+
 				$content = $this->cObj->substituteMarkerArray($content, $markerArray);
 			} else {
 				if (TYPO3_DLOG) t3lib_div::devLog('locallang file not found', $this->extKey, '3', $LLfile);
