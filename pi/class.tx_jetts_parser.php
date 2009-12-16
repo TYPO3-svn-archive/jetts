@@ -31,7 +31,15 @@
  * @subpackage	tx_jetts
  */
 class tx_jetts_parser {
-	
+
+  // Variables
+  public $conf;         // Configuration variable
+  public $type;         // Type of template XML or HTML
+  public $DomDoc;       // DOM Document
+  public $LLkey;        // Localization Language key
+  public $altLLkey;     // Alternative Localization Language key
+  public $xpath;        // DOM Xpath
+  
 	/**
 	 * The main method of the PlugIn
 	 * shall not be called when using this plugin from another plugin
@@ -202,18 +210,46 @@ class tx_jetts_parser {
 					$beginMark = new DOMComment('###' . $key . '### begin');
 					$endMark = new DOMComment('###' . $key . '### end');
 
-					foreach ($elements as $el) {
-            // Suppress the comment marker if they exist
+					foreach ($elements as $keyElement => $el) {
+            // Remove the comment markers if they exist
             if ($el->hasChildNodes()) {
-              foreach($el->childNodes as $childNode) {
+              $nodesToDelete = array();
+              foreach ($el->childNodes as $childNode) {
                 if ($childNode->nodeType == XML_COMMENT_NODE && strpos($childNode->nodeValue, '###' . $key . '###') !== FALSE) {
-                  $el->removeChild($childNode);
+                  $nodesToDelete[] = $childNode;
                 }
+              }
+              // Because children cannot be directly removed while iterating (See comments on removeChild in the php documentation)
+              foreach ($nodesToDelete as $nodeToDelete) {
+                $el->removeChild($nodeToDelete);
               }
             }
 
-						$el->insertBefore($beginMark, $el->firstChild);
-						$el->appendChild($endMark);
+            if ($el->nodeType == XML_TEXT_NODE) {
+              // Remove the comment markers in the parent node if they exist
+              $nodesToDelete = array();
+              foreach($el->parentNode->childNodes as $childNode) {
+                if ($childNode->nodeType == XML_COMMENT_NODE && strpos($childNode->nodeValue, '###' . $key . '###') !== FALSE) {
+                  $nodesToDelete[] = $childNode;
+                }
+              }
+              // Because children cannot be directly removed while iterating (See comments on removeChild in the php documentation)
+              foreach ($nodesToDelete as $nodeToDelete) {
+                $el->parentNode->removeChild($nodeToDelete);
+              }
+              
+              // Insert the markers
+              $el->parentNode->insertBefore($beginMark, $el);
+              if (!is_null($el->nextSibling)) {
+                $el->parentNode->insertBefore($endMark, $el->nextSibling);
+              } else {
+                $el->parentNode->appendChild($endMark);
+              }
+            } else {
+              // Insert the markers
+						  $el->insertBefore($beginMark, $el->firstChild);
+						  $el->appendChild($endMark);
+            }
 					}
 				}
 			}

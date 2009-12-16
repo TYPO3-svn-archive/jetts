@@ -25,7 +25,8 @@
 require_once(PATH_t3lib . 'class.t3lib_tsparser.php');
 
 class tx_jetts_templateSelector {
-	var $prefix = 'Static: ';
+
+	public $prefix = 'Static: ';
 
   function main(&$params,&$pObj)    {
 
@@ -51,7 +52,7 @@ class tx_jetts_templateSelector {
           t3lib_BEfunc::deleteClause('sys_template'),
         'config'
       );
-        
+
       // parse the config if it exists
       if (is_array($row) && !empty($row['config'])) {
         $TSparser->parse($row['config']);
@@ -72,12 +73,24 @@ class tx_jetts_templateSelector {
             case 'sub':
               if ($params['field'] == 'tx_jetts_subtemplate') {
                 $params['items'][] = array($pObj->sL($value['label']), substr($key, 0, -1), $icon);
+/*
+                $label = ($pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) ?
+                  $pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) :
+                  $value['label']);
+                $params['items'][] = array($label, substr($key, 0, -1), $icon);
+*/
               }
               break;
             case 'main':
             default:
               if ($params['field'] == 'tx_jetts_template') {
                 $params['items'][] = array($pObj->sL($value['label']), substr($key, 0, -1), $icon);
+/*
+                $label = ($pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) ?
+                  $pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) :
+                  $value['label']);
+                $params['items'][] = array($label, substr($key, 0, -1), $icon);
+*/
               }
               break;
           }
