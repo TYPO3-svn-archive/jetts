@@ -59,7 +59,6 @@ t3lib_extMgm::addPlugin(array(
 include_once($thisPath.'class.tx_jetts_templateSelector.php');
 
 
-
 /* add new columns to TCA if necessary */
 
 $nbCols = intval($_EXTCONF['nbCols']);
@@ -87,17 +86,10 @@ if($nbCols > 4) {
 	');
 }
 
+$jetts_ll_path = t3lib_div::getFileAbsFileName('typo3conf/ext/user_jetts_ll/');
+
 if(t3lib_extMgm::isLoaded('user_jetts_ll') && $colPosLabels) {
 
-	$LL = t3lib_div::readLLfile('typo3conf/ext/user_jetts_ll/locallang_db.xml','default');
-	
-	// if a locallang_db.xml file already exists preserve labels
-	if($LL) {
-		foreach($colPosLabels as $key=>$value) {
-			if(isset($LL['default']['colPos.I.'.$key])) $colPosLabels[$key] = $LL['default']['colPos.I.'.$key];
-		}
-	}
-	
 	$llXmlArray = array(
 		'meta' => array(
 			'type' => 'database',
@@ -113,6 +105,12 @@ if(t3lib_extMgm::isLoaded('user_jetts_ll') && $colPosLabels) {
 		$llXmlArray['data']['default']['colPos.I.'.$key] = $value;
 	}
 	
+	// preserve localized label if file already translated
+	if($orig_xml = t3lib_div::getUrl($jetts_ll_path.'locallang_db.xml')) {
+		$orig_xml = t3lib_div::xml2array($orig_xml);
+		$llXmlArray = t3lib_div::array_merge_recursive_overrule($llXmlArray,$orig_xml);
+	}
+	
 	$options = array(
 		'parentTagMap' => array(
 			'data' => 'languageKey',
@@ -123,11 +121,16 @@ if(t3lib_extMgm::isLoaded('user_jetts_ll') && $colPosLabels) {
 	$xmlContent .= t3lib_div::array2xml($llXmlArray,'',0,'T3locallang',0,$options);
 	t3lib_div::writeFile(t3lib_extMgm::extPath('user_jetts_ll').'locallang_db.xml',$xmlContent);
 
-}else{
+}
+
+if(!@is_file($jetts_ll_path.'ext_emconf.php')) {
 	/* create place-holder extension for localized files */
-	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/ext_emconf.php.skel',$thisPath.'../user_jetts_ll/ext_emconf.php');
-	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/locallang_xml.skel',$thisPath.'../user_jetts_ll/locallang_xml');
-	
+	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/ext_emconf.php.skel',$jetts_ll_path.'ext_emconf.php');
+	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/locallang.xml.skel',$jetts_ll_path.'locallang.xml');
+}
+
+// if extension folder created but extension is not loaded, warn user
+if(@is_file($jetts_ll_path.'ext_emconf.php') && (!t3lib_extMgm::isLoaded('user_jetts_ll'))) {
 	// if Typo3 >= 4.3 use a flash message to tell the user to install user_jetts_ll
 	if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 		$message = t3lib_div::makeInstance('t3lib_FlashMessage', 
@@ -138,7 +141,7 @@ if(t3lib_extMgm::isLoaded('user_jetts_ll') && $colPosLabels) {
 		);
 		t3lib_FlashMessageQueue::addMessage($message);
 	}
-
 }
+
 
 ?>
