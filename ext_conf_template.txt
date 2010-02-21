@@ -1,0 +1,5 @@
+	# cat=basic; type=string; label=Number of columns in back-office:If you need more than 4 columns in the back-office, enter the total number of columns here (any figure below 5 will be ignored). Labels for all columns will be editable in typo3conf/ext/user_ll/locallang_db.xml (use llxmltranslate or lfeditor for this)
+nbCols = 4
+
+	# cat=basic; type=boolean; label=Localize default columns with LLXML:The names of the 4 default column are partially localizable through core LLXML files. This feature enable you yo rename the default columns thanks to a localization extension (such as llxmltranslate of lfeditor), labels will be stored in typo3conf/ext/user_jetts_ll/locallang_db.xml
+localizeDefaultColumns = 1

@@ -59,7 +59,7 @@ class tx_jetts_parser {
 	 * 
 	 */
 	public function parse($conf) {
-		$starttime = microtime();
+		if (TYPO3_DLOG) $starttime = microtime();
 
     // Set the localization keys
 		if ($GLOBALS['TSFE']->config['config']['language'])	{

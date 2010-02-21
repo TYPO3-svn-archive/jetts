@@ -1,0 +1,11 @@
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Example file to hold your template translations</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="LOGO_ALT">my company logo</label>
+		</languageKey>
+	</data>
+</T3locallang>
