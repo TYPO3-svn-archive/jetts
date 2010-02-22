@@ -55,7 +55,7 @@ class tx_jetts_templateSelector {
 
       // parse the config if it exists
       if (is_array($row) && !empty($row['config'])) {
-        $TSparser->parse($row['config']);
+      	$TSparser->parse($TSparser->checkIncludeLines($row['config']));
       }
     }
 
