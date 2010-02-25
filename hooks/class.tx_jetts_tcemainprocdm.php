@@ -3,7 +3,7 @@
 class tx_jetts_tcemainprocdm {
 	
 	/*
-plugin.tx_jetts.acl {
+tx_jetts.acl {
 	byContentType {
 		noEdit = bullets
 		noHide = textpic
@@ -25,15 +25,15 @@ plugin.tx_jetts.acl {
 	}
 }
 	 */
-	function processCmdmap_preProcess(&$command, $table, $id, $value, &$parent) {
+	function processCmdmap_preProcess(&$command, $table, $id, $value, $parent) {
 
-		//if($GLOBALS['BE_USER']->user['admin']) return;
+		if($GLOBALS['BE_USER']->user['admin']) return;
 		
 		$contentTable = $GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable'];
 		
 		if($table == $contentTable && $command == 'delete') {
 			$rec = t3lib_BEfunc::getRecord($table, $id);
-			$perms = $this->getPermissions($rec);
+			if(!$perms = $this->getPermissions($rec)) return;
 			$LL = $GLOBALS['LANG']->includeLLfile('EXT:jetts/locallang_db.xml',0);
 			if(
 				t3lib_div::inList($perms['byContentType']['noEdit'],$rec['CType'])
@@ -52,9 +52,9 @@ plugin.tx_jetts.acl {
 		}
 	}
 	
-	function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$parent) {
+	function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, $parent) {
 		
-		//if($GLOBALS['BE_USER']->user['admin']) return;
+		if($GLOBALS['BE_USER']->user['admin']) return;
 
 		$contentTable = $GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable'];
 		
@@ -64,7 +64,7 @@ plugin.tx_jetts.acl {
 				case 'new':
 					$rec = $fieldArray;
 					$rec['uid'] = $id;
-					$perms = $this->getPermissions($rec);
+					if(!$perms = $this->getPermissions($rec)) return;
 					$error = false;
 					// check for allowed new content elements (globally)
 					if($perms['byContentType']['allowed']) {
@@ -87,7 +87,7 @@ plugin.tx_jetts.acl {
 					break;
 				case 'update':
 					$rec = t3lib_BEfunc::getRecord($table, $id);
-					$perms = $this->getPermissions($rec);
+					if(!$perms = $this->getPermissions($rec)) return;
 					// check if element can be edited
 					if(
 						t3lib_div::inList($perms['byContentType']['noEdit'],$rec['CType'])
@@ -115,11 +115,14 @@ plugin.tx_jetts.acl {
 	
 	function getPermissions($row) {
 		$tscPID = t3lib_BEfunc::getTSconfig_pidValue($GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable'],$row['uid'],$row['pid']);
-		$TS = $GLOBALS['BE_USER']->getTSConfig('plugin.tx_jetts.acl',t3lib_BEfunc::getPagesTSconfig($tscPID));
+		$TS = t3lib_BEfunc::getModTSconfig($tscPID, 'tx_jetts.acl');
 		$TS = $TS['properties'];
-		$TS = t3lib_div::removeDotsFromTS($TS);
-		array_walk_recursive($TS,array($this, 'expandLists'));
-		return $TS;
+		if($TS) {
+			$TS = t3lib_div::removeDotsFromTS($TS);
+			array_walk_recursive($TS,array($this, 'expandLists'));
+			return $TS;
+		}
+		return false;
 	}
 	
 	function expandLists(&$item, $key) {
