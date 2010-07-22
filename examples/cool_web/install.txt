@@ -1,0 +1,43 @@
+create a folder named templates in fileadmin
+unpack tpl_cool_web.zip to fileadmin/templates/
+copy paste in constants
+
+# CONSTANTS
+<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/constants.txt">
+
+
+
+copy paste in setup
+enable css_styled_content
+voila
+
+
+# CONFIGURATION
+<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/config.txt">
+
+# TIP
+<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/suchen.txt">
+
+# HORIZONTAL MENU
+<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/menu_oben.txt">
+
+# HORIZONTAL MENU
+<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/menu_unten.txt">
+
+# HORIZONTAL SUB MENU
+<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/menu_links.txt">
+
+# BREADCRUMP MENU
+#<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/rootline.txt">
+
+# LAST UPDATE
+#<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/lastupdate.txt">
+
+# PRINT
+#<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/print.txt">
+
+# COUNTER
+#<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/counter.txt">
+
+# PAGE SETUP
+<INCLUDE_TYPOSCRIPT: source="FILE: fileadmin/templates/cool_web/typoscript/setup.txt">

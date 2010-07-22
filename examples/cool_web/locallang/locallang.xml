@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for cool_web template</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="HOME_TITLE">Home</label>
+			<label index="HOME_ALT">Home</label>
+			<label index="CONTACT_TITLE">Contact</label>
+			<label index="CONTACT_ALT">Contact</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="HOME_TITLE">Accueil</label>
+			<label index="HOME_ALT">Accueil</label>
+			<label index="CONTACT_TITLE">Contact</label>
+			<label index="CONTACT_ALT">Contact</label>
+		</languageKey>
+	</data>
+</T3locallang>

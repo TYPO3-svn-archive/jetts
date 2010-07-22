@@ -1,0 +1,198 @@
+a:2:{s:4:"meta";a:3:{s:5:"title";s:5:"jetts";s:5:"descr";s:142:"Nice replacement for automaketempate, build your templates with xpath, insert markers in attributes, auto-localize your templates, and more...";s:7:"options";a:2:{s:10:"usageCount";s:1:"1";s:19:"includeCodeAbstract";s:1:"1";}}s:5:"files";a:1:{s:14:"MD5_67ac3a73ea";a:5:{s:8:"filename";s:24:"pi/class.tx_jetts_pi.php";s:8:"filesize";i:8702;s:6:"header";a:5:{s:4:"text";s:41:"
+
+Plugin 'pi' for the 'jetts' extension.
+";s:5:"param";a:0:{}s:6:"return";a:2:{i:0;s:6:"[type]";i:1;s:3:"...";}s:5:"other";a:3:{i:0;s:31:"@author	 <contact@ilomedia.net>";i:1;s:14:"@package	TYPO3";i:2;s:20:"@subpackage	tx_jetts";}s:11:"other_index";a:3:{s:7:"@author";a:1:{i:0;s:23:"<contact@ilomedia.net> ";}s:8:"@package";a:1:{i:0;s:6:"TYPO3 ";}s:11:"@subpackage";a:1:{i:0;s:9:"tx_jetts ";}}}s:3:"DAT";a:10:{i:1;a:8:{s:6:"header";s:40:"class tx_jetts_pi extends tslib_pibase {";s:5:"class";i:1;s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:5:{s:4:"text";s:41:"
+
+Plugin 'pi' for the 'jetts' extension.
+";s:5:"param";a:0:{}s:6:"return";a:2:{i:0;s:6:"[type]";i:1;s:3:"...";}s:5:"other";a:3:{i:0;s:31:"@author	 <contact@ilomedia.net>";i:1;s:14:"@package	TYPO3";i:2;s:20:"@subpackage	tx_jetts";}s:11:"other_index";a:3:{s:7:"@author";a:1:{i:0;s:23:"<contact@ilomedia.net> ";}s:8:"@package";a:1:{i:0;s:6:"TYPO3 ";}s:11:"@subpackage";a:1:{i:0;s:9:"tx_jetts ";}}}s:7:"content";a:2:{i:0;s:247:"	var $prefixId      = 'tx_jetts_pi';		// Same as class name
+	var $scriptRelPath = 'pi/class.tx_jetts_pi.php';	// Path to this script relative to the extension dir.
+	var $extKey        = 'jetts';	// The extension key.
+	var $pi_checkCHash = true;
+
+	";i:1;i:-1;}s:12:"content_size";i:247;s:13:"content_lines";i:5;s:6:"atLine";i:33;}i:3;a:7:{s:6:"header";s:31:"function main($content,$conf)	{";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:95:"
+
+The main method of the PlugIn
+shall not be called when using this plugin from another plugin
+";s:5:"param";a:2:{i:0;a:2:{i:0;s:6:"string";i:1;s:28:"$content: The PlugIn content";}i:1;a:2:{i:0;s:5:"array";i:1;s:31:"$conf: The PlugIn configuration";}}s:6:"return";a:2:{i:0;s:3:"The";i:1;s:40:"content that is displayed on the website";}}s:7:"content";a:2:{i:0;s:507:"		$starttime = microtime();
+		$this->conf=$conf;
+		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
+
+
+		$content = $this->local_cObj->fileResource($this->conf['templateFile']);
+		if($content) {
+			// first xpath magic
+			$type = ($this->conf['type'] == 'XML') ? 'XML' : 'HTML';
+
+			$this->initTemplate($content,false,$type);
+
+			$this->createSubparts
+[...]
+ime()-$starttime)));
+			return $content;
+
+		}else{
+			t3lib_div::devLog('No template specified',$this->extKey,'3');
+		}
+	}
+
+	";i:1;i:1;}s:12:"content_size";i:789;s:13:"content_lines";i:30;s:6:"atLine";i:47;}i:5;a:7:{s:6:"header";s:70:"public function initTemplate($templateCode,$conf=false,$type='HTML') {";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:58:"
+
+create DOMDocument and DOMXpath objects on templateCode
+";s:5:"param";a:3:{i:0;a:2:{i:0;s:6:"string";i:1;s:27:"$templateCode: The template";}i:1;a:2:{i:0;s:5:"array";i:1;s:37:"$conf: The local PlugIn configuration";}i:2;a:2:{i:0;s:6:"string";i:1;s:58:"$type: the type of template XML or HTML (defaults to HTML)";}}s:6:"return";a:2:{i:0;s:4:"void";i:1;s:0:"";}}s:7:"content";a:2:{i:0;s:507:"
+		// if you use this plugin in your own plugin, $conf will override TS conf
+		if($conf) $this->conf = $conf;
+
+		$this->type = $type;
+		$this->DomDoc = new DOMDocument();
+
+		// replace windows and mac newlines by unix newline
+		$mac_newline = "\r";
+		$win_newline = "\r\n";
+		$templateCode = str_replace($win_newline,"\n",$templateCode);
+		$templateCode = str_replace($mac_ne
+[...]
+$templateCode);
+		}else{
+			$this->DomDoc->loadHTML($templateCode);
+		}
+
+		$this->xpath = new DOMXpath($this->DomDoc);
+
+	}
+
+	";i:1;i:1;}s:12:"content_size";i:748;s:13:"content_lines";i:26;s:6:"atLine";i:86;}i:7;a:7:{s:6:"header";s:32:"public function saveTemplate() {";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:62:"
+
+outputs the DOMDocument (to be used after all your parsing)
+";s:5:"param";a:0:{}s:6:"return";a:2:{i:0;s:3:"XML";i:1;s:15:"or HTML content";}}s:7:"content";a:2:{i:0;s:119:"		if($this->type = 'XML') {
+			return $this->DomDoc->saveXML();
+		}else{
+			return $this->DomDoc->saveHTML();
+		}
+	}
+
+	";i:1;i:0;}s:12:"content_size";i:119;s:13:"content_lines";i:7;s:6:"atLine";i:118;}i:9;a:7:{s:6:"header";s:34:"public function createSubparts() {";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:210:"
+
+parses content with xptah expression and create subparts
+
+example TS config : subparts.MAIN = //div[@id='main']
+
+example output : <div id="main"><!--###MAIN### begin-->main content<!--###MAIN### end--></div>
+";s:5:"param";a:0:{}s:6:"return";a:2:{i:0;s:11:"DOMDocument";i:1;s:40:"with subparts inserted in relevant nodes";}}s:7:"content";a:2:{i:0;s:416:"		if($this->conf['subparts.']) {
+			foreach($this->conf['subparts.'] as $key=>$subpart) {
+
+				$elements = $this->xpathQuery($subpart);
+
+				if($elements) {
+					$beginMark = new DOMComment('###'.$key.'### begin');
+					$endMark = new DOMComment('###'.$key.'### end');
+					foreach($elements as $el) {
+						$el->insertBefore($beginMark,$el->firstChild);
+						$el->appendChild($endMark);
+					}
+				}
+			}
+		}
+	}
+
+	";i:1;i:0;}s:12:"content_size";i:416;s:13:"content_lines";i:17;s:6:"atLine";i:135;}i:11;a:7:{s:6:"header";s:31:"public function createMarks() {";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:339:"
+
+parses content with xptah expression and create subparts
+
+example TS configs :
+this will replace an attribute : marks.LOGO_ALT = //p[@id='logo']/img/@alt
+this will replace the whole tag content : marks.LOGO = //p[@id='logo']
+
+example outputs :
+- <p id="logo"><img>###LOGO###</p>
+- <p id="logo"><img src="..." alt="###LOGO_ALT###" /></p>
+";s:5:"param";a:0:{}s:6:"return";a:2:{i:0;s:11:"DOMDocument";i:1;s:37:"with marks inserted in relevant nodes";}}s:7:"content";a:2:{i:0;s:246:"		if($this->conf['marks.']) {
+			foreach($this->conf['marks.'] as $key=>$mark) {
+
+				$elements = $this->xpathQuery($mark);
+
+				if($elements) {
+					foreach($elements as $el) {
+						$el->nodeValue = '###'.$key.'###';
+					}
+				}
+			}
+		}
+	}
+
+	";i:1;i:0;}s:12:"content_size";i:246;s:13:"content_lines";i:14;s:6:"atLine";i:166;}i:13;a:7:{s:6:"header";s:21:"function stdWraps() {";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:218:"
+
+parses content with xptah expression and execute stdWrap
+
+example TS configs :
+stdWraps.MYTEXT = //p[@id='someid']
+stdWraps.MYTEXT.crop = 20 | ...
+
+example outputs :
+- <p id="someid"><img>cropped to 20 caract...</p>
+";s:5:"param";a:0:{}s:6:"return";a:2:{i:0;s:11:"DOMDocument";i:1;s:36:"with stdWrap executed on found nodes";}}s:7:"content";a:2:{i:0;s:355:"		if($this->conf['stdWraps.']) {
+			foreach($this->conf['stdWraps.'] as $key=>$stdWrap) {
+				if(!is_array($stdWrap)) {
+
+					$elements = $this->xpathQuery($stdWrap);
+
+					if($elements) {
+						foreach($elements as $el) {
+							$el->nodeValue = $this->cObj->stdWrap($el->nodeValue,$this->conf['stdWraps.'][$key.'.']);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	";i:1;i:0;}s:12:"content_size";i:355;s:13:"content_lines";i:16;s:6:"atLine";i:193;}i:15;a:7:{s:6:"header";s:35:"public function substituteLinks() {";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:188:"
+
+find any link starting with 'index.php?id='
+and generates nice links with typolink
+
+as usual, 'config.linkVars = L' must be set in your TS
+if you want language attribute to be preserved
+";s:5:"param";a:0:{}s:6:"return";a:2:{i:0;s:11:"DOMDocument";i:1;s:13:"link replaced";}}s:7:"content";a:2:{i:0;s:507:"		//select all attributes starting with 'index.php?id=' (is it too greedy?)
+		$elements = $this->xpath->query("//*/@*[starts-with(.,'index.php?id=')]");
+
+		foreach($elements as $el) {
+			$query = parse_url($el->nodeValue);
+			parse_str($query['query'],$params);
+
+			$parameter = $params['id'];
+
+			unset($params['id']);
+			$additionalParams = http_build_query($params);
+			if
+[...]
+rams' => $additionalParams,
+				)
+			);
+			$el->nodeValue = str_replace("&","&amp;",$url);
+		}
+
+		return $this->DomDoc;
+	}
+
+	";i:1;i:1;}s:12:"content_size";i:668;s:13:"content_lines";i:25;s:6:"atLine";i:219;}i:17;a:4:{s:6:"header";s:52:"public function substituteLocallangMarks($content) {";s:11:"parentClass";s:11:"tx_jetts_pi";s:4:"cDat";a:3:{s:4:"text";s:75:"
+
+loops through given locallang file and replace marks with matching names
+";s:5:"param";a:1:{i:0;a:2:{i:0;s:6:"string";i:1;s:30:"$content: the template content";}}s:6:"return";a:2:{i:0;s:8:"template";i:1;s:31:"content with substituted labels";}}s:6:"atLine";i:251;}i:19;a:6:{s:6:"header";s:29:"function xpathQuery($query) {";s:11:"parentClass";s:11:"tx_jetts_pi";s:7:"content";a:2:{i:0;s:509:"		$elements = @$this->xpath->query($query);
+		if($elements) {
+			if($elements->length == 0) {
+				t3lib_div::devLog('xpath returns no result',$this->extKey,'1',array($query));
+			}
+			return $elements;
+		}else{
+			t3lib_div::devLog('invalid xpath query',$this->extKey,'2',array($query));
+		}
+	}
+}
+
+
+
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/jetts/pi1/class.tx_jetts_pi.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/jetts/pi1/class.tx_jetts_pi.php']);
+}
+
+?>";i:1;i:0;}s:12:"content_size";i:509;s:13:"content_lines";i:18;s:6:"atLine";i:290;}}s:10:"usageCount";a:10:{s:12:"H_3343c3f1c5";a:2:{s:24:"_searchtime_milliseconds";d:5;s:15:"_functionHeader";s:40:"class tx_jetts_pi extends tslib_pibase {";}s:12:"H_e8476b0991";a:2:{s:24:"_searchtime_milliseconds";d:1;s:15:"_functionHeader";s:31:"function main($content,$conf)	{";}s:12:"H_73d790104c";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:24:"_searchtime_milliseconds";d:1;s:15:"_functionHeader";s:70:"public function initTemplate($templateCode,$conf=false,$type='HTML') {";}s:12:"H_b1cbd66aab";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:24:"_searchtime_milliseconds";d:1;s:15:"_functionHeader";s:32:"public function saveTemplate() {";}s:12:"H_1b1218b157";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:24:"_searchtime_milliseconds";d:1;s:15:"_functionHeader";s:34:"public function createSubparts() {";}s:12:"H_3400b4f8ce";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:24:"_searchtime_milliseconds";d:1;s:15:"_functionHeader";s:31:"public function createMarks() {";}s:12:"H_ade8d85338";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:24:"_searchtime_milliseconds";d:0;s:15:"_functionHeader";s:21:"function stdWraps() {";}s:12:"H_1c45fec4d2";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:24:"_searchtime_milliseconds";d:0;s:15:"_functionHeader";s:35:"public function substituteLinks() {";}s:12:"H_cace8a3460";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:1;s:5:"TOTAL";i:1;}s:24:"_searchtime_milliseconds";d:2;s:15:"_functionHeader";s:52:"public function substituteLocallangMarks($content) {";}s:12:"H_1e56b88d0f";a:4:{s:3:"ALL";a:2:{s:11:"objectUsage";i:3;s:5:"TOTAL";i:3;}s:14:"MD5_67ac3a73ea";a:3:{s:8:"fileName";s:24:"pi/class.tx_jetts_pi.php";s:11:"objectUsage";i:3;s:5:"TOTAL";i:3;}s:24:"_searchtime_milliseconds";d:1;s:15:"_functionHeader";s:29:"function xpathQuery($query) {";}}}}}

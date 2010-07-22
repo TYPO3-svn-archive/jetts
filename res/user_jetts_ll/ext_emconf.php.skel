@@ -1,0 +1,35 @@
+<?php
+
+$EM_CONF[$_EXTKEY] = array(
+	'title' => 'Jetts LocalLang files place-holder',
+	'description' => 'This extension is created automatically by Jetts to hold your templates translation files and the back-office table names',
+	'category' => 'user',
+	'shy' => 0,
+	'version' => '0.0.0',
+	'dependencies' => '',
+	'conflicts' => '',
+	'priority' => '',
+	'loadOrder' => '',
+	'module' => '',
+	'state' => 'stable',
+	'uploadfolder' => 0,
+	'createDirs' => '',
+	'modify_tables' => '',
+	'clearcacheonload' => 1,
+	'lockType' => '',
+	'author' => '',
+	'author_email' => '',
+	'author_company' => '',
+	'CGLcompliance' => '',
+	'CGLcompliance_note' => '',
+	'constraints' => array(
+		'depends' => array(
+		),
+		'conflicts' => array(
+		),
+		'suggests' => array(
+		),
+	),
+);
+
+?>

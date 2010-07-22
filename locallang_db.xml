@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'jetts'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="pages.tx_jetts_template">Template</label>
+			<label index="pages.tx_jetts_subtemplate">Template for subpages</label>
+			<label index="jetts.hooks.error.noDelete">This content can not be deleted</label>
+			<label index="jetts.hooks.error.noEdit">This content can not be edited</label>
+			<label index="jetts.hooks.error.noHide">This content can not be hidden</label>
+			<label index="jetts.hooks.error.allowed">This type of content can not be created here</label>
+		</languageKey>
+	</data>
+</T3locallang>
