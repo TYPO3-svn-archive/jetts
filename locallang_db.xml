@@ -6,12 +6,31 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="pages.tx_jetts_template">Template</label>
-			<label index="pages.tx_jetts_subtemplate">Template for subpages</label>
+			<label index="pages.tx_jetts_template_mapping">Template</label>
+			<label index="pages.tx_jetts_subtemplate_mapping">Template for subpages</label>
+			<label index="pages.tx_jetts_template">Template (defined by Typoscript)</label>
+			<label index="pages.tx_jetts_subtemplate">Template for subpages (defined by Typoscript)</label>
 			<label index="jetts.hooks.error.noDelete">This content can not be deleted</label>
 			<label index="jetts.hooks.error.noEdit">This content can not be edited</label>
 			<label index="jetts.hooks.error.noHide">This content can not be hidden</label>
 			<label index="jetts.hooks.error.allowed">This type of content can not be created here</label>
+			<label index="tx_jetts_mapping">Jetts mapping</label>
+            <label index="tx_jetts_mapping.title">Title</label>
+            <label index="tx_jetts_mapping.description">Description</label>
+            <label index="tx_jetts_mapping.thumbnail">Thumbnail</label>
+            <label index="tx_jetts_mapping.html">Html file</label>
+            <label index="tx_jetts_mapping.llxml">Path to LLXML file</label>
+            <label index="tx_jetts_mapping.mapping">Mapping preview (passed to Typoscript TEMPLATE object)</label>
+            <label index="tx_jetts_mapping.mapping_json">Wizard</label>
+            <label index="tx_jetts_mapping.header">Header parts</label>
+            <label index="tx_jetts_mapping.css">Css includes</label>
+            <label index="tx_jetts_mapping.js">Js includes in header</label>
+            <label index="tx_jetts_mapping.js_bottom">Js includes in footer</label>
+            <label index="tx_jetts_mapping.tab.general">General</label>
+            <label index="tx_jetts_mapping.tab.mapping">Mapping</label>
+            <label index="tx_jetts_mapping.tab.header">Header parts</label>
+            <label index="tx_jetts_mapping.tab.css_js">Styles and javascript</label>
+            <label index="tx_jetts_mapping.tab.ll">Automatic localisation</label>
 		</languageKey>
 	</data>
 </T3locallang>

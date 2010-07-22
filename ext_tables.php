@@ -7,60 +7,121 @@ if (!defined ('TYPO3_MODE')) {
 $thisPath = t3lib_extMgm::extPath('jetts');
 $_EXTCONF = unserialize($_EXTCONF);
 
-
-
-/* add Jetts fields to Page form */
-$tempColumns = array (
-    'tx_jetts_template' => array (        
-        'exclude' => 1,        
-        'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_template',        
-        'config' => array (
-            'type' => 'select',
-            'itemsProcFunc' => 'tx_jetts_templateSelector->main',
-            'items' => array(
-            	'0' => ''
-            ),
-            'size' => 1,  
-            'minitems' => 0,
-            'maxitems' => 1,
-        )
-    ),
-    'tx_jetts_subtemplate' => array (        
-        'exclude' => 1,        
-        'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_subtemplate',        
-        'config' => array (
-            'type' => 'select',
-            'itemsProcFunc' => 'tx_jetts_templateSelector->main',
-            'items' => array(
-            	'0' => ''
-            ),
-            'size' => 1,  
-            'minitems' => 0,
-            'maxitems' => 1,
-        )
-    ),
-);
-
-
 t3lib_div::loadTCA('pages');
-t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
-t3lib_extMgm::addToAllTCAtypes('pages','--div--;Jetts,tx_jetts_template,tx_jetts_subtemplate');
 
-t3lib_extMgm::addPlugin(array(
-	'LLL:EXT:jetts/locallang_db.xml:tt_content.list_type_pi1',
-	$_EXTKEY . '_pi',
-	''
-),'list_type');
+/*
+ * BEGIN: instantiate wizard
+ * only if version of TYPO3 is above 4.3 (we need extJs)
+ */
+if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
+	$TCA['tx_jetts_mapping'] = array (
+	    'ctrl' => array (
+	        'title'     => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping',        
+	        'label'     => 'title',    
+	        'tstamp'    => 'tstamp',
+	        'crdate'    => 'crdate',
+	        'cruser_id' => 'cruser_id',
+	        'default_sortby' => 'ORDER BY crdate',    
+	        'delete' => 'deleted',    
+	        'enablecolumns' => array (        
+	            'disabled' => 'hidden',
+	        ),
+	        'dividers2tabs' => true,
+	        'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
+	        'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon.gif',
+	        'selicon_field' => 'thumbnail',
+	        'selicon_field_path' => 'uploads/tx_jetts',
+	    ),
+	);
+	
+	t3lib_extMgm::addLLrefForTCAdescr('tx_jetts_mapping','EXT:jetts/locallang_csh_mapping.xml');
+	
+	$tempColumns = array (
+	    'tx_jetts_template_mapping' => array (        
+	        'exclude' => 1,        
+	        'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_template_mapping',
+			'config'      => array (
+				'type'  => 'select',
+				'items' => array (
+					array('', 0),
+				),
+				'foreign_table'       => 'tx_jetts_mapping',
+				'foreign_table_where' => 'AND (tx_jetts_mapping.pid=###STORAGE_PID### OR tx_jetts_mapping.pid IN (###PAGE_TSCONFIG_IDLIST###))',
+				'foreign_table_loadIcons' => true
+			)
+	    ),
+	    'tx_jetts_subtemplate_mapping' => array (        
+	        'exclude' => 1,        
+	        'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_subtemplate_mapping',        
+			'config'      => array (
+				'type'  => 'select',
+				'items' => array (
+					array('', 0),
+				),
+				'foreign_table'       => 'tx_jetts_mapping',
+				'foreign_table_where' => 'AND (tx_jetts_mapping.pid=###STORAGE_PID### OR tx_jetts_mapping.pid IN (###PAGE_TSCONFIG_IDLIST###))',
+				'foreign_table_loadIcons' => true
+			)
+	    ),
+	);
+	
+	t3lib_extMgm::addStaticFile($_EXTKEY, 'static/', 'jetts');
+	
+	t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
+	t3lib_extMgm::addToAllTCAtypes('pages','--div--;Jetts,tx_jetts_template_mapping,tx_jetts_subtemplate_mapping');
+}
+/*
+ * END: instantiate wizard
+ */
 
+/*
+ * BEGIN: instantiate "Typoscript template selector"
+ * only if set in configuration or TYPO3 verison lower than 4.3
+ */
+if($_EXTCONF['enableTyposcriptSelector'] || (t3lib_div::int_from_ver(TYPO3_version) < 4003000)) {
+	$tempColumns = array (
+	    'tx_jetts_template' => array (        
+	        'exclude' => 1,        
+	        'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_template',        
+	        'config' => array (
+	            'type' => 'select',
+	            'itemsProcFunc' => 'tx_jetts_templateSelector->main',
+	            'items' => array(
+	            	'0' => ''
+	            ),
+	            'size' => 1,  
+	            'minitems' => 0,
+	            'maxitems' => 1,
+	        )
+	    ),
+	    'tx_jetts_subtemplate' => array (        
+	        'exclude' => 1,        
+	        'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_subtemplate',        
+	        'config' => array (
+	            'type' => 'select',
+	            'itemsProcFunc' => 'tx_jetts_templateSelector->main',
+	            'items' => array(
+	            	'0' => ''
+	            ),
+	            'size' => 1,  
+	            'minitems' => 0,
+	            'maxitems' => 1,
+	        )
+	    ),
+	);
+	
+	include_once($thisPath.'class.tx_jetts_templateSelector.php');
 
+	t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
+	t3lib_extMgm::addToAllTCAtypes('pages','tx_jetts_template,tx_jetts_subtemplate');
+}
+/*
+ * END: instantiate "Typoscript template selector"
+ */
 
-/* include template selector class */
-
-include_once($thisPath.'class.tx_jetts_templateSelector.php');
-
-
-/* add new columns to TCA if necessary */
-
+/*
+ * BEGIN: add new columns to TCA if necessary
+ */
 $nbCols = intval($_EXTCONF['nbCols']);
 
 if($_EXTCONF['localizeDefaultColumns']) {
@@ -122,14 +183,19 @@ if(t3lib_extMgm::isLoaded('user_jetts_ll') && $colPosLabels) {
 	t3lib_div::writeFile(t3lib_extMgm::extPath('user_jetts_ll').'locallang_db.xml',$xmlContent);
 
 }
+/*
+ * END: add new columns to TCA if necessary
+ */
 
+/*
+ * 	BEGIN: create user_jetts_ll place-holder extension for localized files
+ */
 if(!@is_file($jetts_ll_path.'ext_emconf.php')) {
-	/* create place-holder extension for localized files */
 	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/ext_emconf.php.skel',$jetts_ll_path.'ext_emconf.php');
 	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/locallang.xml.skel',$jetts_ll_path.'locallang.xml');
 }
 
-// if extension folder created but extension is not loaded, warn user
+// if extension folder is created but extension is not loaded, warn user
 if(@is_file($jetts_ll_path.'ext_emconf.php') && (!t3lib_extMgm::isLoaded('user_jetts_ll'))) {
 	// if Typo3 >= 4.3 use a flash message to tell the user to install user_jetts_ll
 	if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
@@ -142,6 +208,8 @@ if(@is_file($jetts_ll_path.'ext_emconf.php') && (!t3lib_extMgm::isLoaded('user_j
 		t3lib_FlashMessageQueue::addMessage($message);
 	}
 }
-
+/*
+ * 	END: create user_jetts_ll place-holder extension for localized files
+ */
 
 ?>
