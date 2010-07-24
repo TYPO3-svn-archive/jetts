@@ -28,20 +28,20 @@ class tx_jetts_templateSelector {
 
 	public $prefix = 'Static: ';
 
-  function main(&$params,&$pObj)    {
+  public function main(&$params,&$pObj)    {
 
-    // Create a local TS parser
+    // Creates a local TS parser
     $TSparser = t3lib_div::makeInstance('t3lib_TSparser');
     
-    // Get the page id
+    // Gets the page id
     $edit = t3lib_div::_GET('edit');
     $pages = $edit['pages'];
     $id = key($pages);
     
-    // get the rootLine
+    // Gets the rootLine
     $rootLine = t3lib_BEfunc::BEgetRootLine($id);
 
-    // Get the config for all pages in the rootline.
+    // Gets the config for all pages in the rootline.
     unset($rootLine[0]);
     foreach($rootLine as $page) {
       // Get the config of the page
@@ -50,21 +50,23 @@ class tx_jetts_templateSelector {
         'pid=' . $page['uid'] .
           t3lib_BEfunc::BEenableFields('sys_template') .
           t3lib_BEfunc::deleteClause('sys_template'),
-        'config'
+        'config,basedOn'
       );
 
-      // parse the config if it exists
-      if (is_array($row) && !empty($row['config'])) {
-      	$TSparser->parse($TSparser->checkIncludeLines($row['config']));
-      }
+      // Parses the config if it exists
+      $TSparser->parse($TSparser->checkIncludeLines(
+        $this->getTyposcriptConfiguration($row)
+        )
+      );
+
     }
 
-    // Get the plugin. part
+    // Gets the plugin. part
     $plugins = $TSparser->setup['plugin.'];
           
-    // Get the jetts_selector
+    // Gets the jetts_selector
     if (is_array($plugins['tx_jetts_selector.'])) {
-      // Get the label
+      // Gets the label
       foreach ($plugins['tx_jetts_selector.'] as $key => $value) {
         $type = explode(',', $value['templateType']);
         $icon = ($value['icon'] ? '../' . $value['icon'] : '');
@@ -73,24 +75,12 @@ class tx_jetts_templateSelector {
             case 'sub':
               if ($params['field'] == 'tx_jetts_subtemplate') {
                 $params['items'][] = array($pObj->sL($value['label']), substr($key, 0, -1), $icon);
-/*
-                $label = ($pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) ?
-                  $pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) :
-                  $value['label']);
-                $params['items'][] = array($label, substr($key, 0, -1), $icon);
-*/
               }
               break;
             case 'main':
             default:
               if ($params['field'] == 'tx_jetts_template') {
                 $params['items'][] = array($pObj->sL($value['label']), substr($key, 0, -1), $icon);
-/*
-                $label = ($pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) ?
-                  $pObj->sL('LLL:' . $value['locallangFile'] . ':' . $value['label']) :
-                  $value['label']);
-                $params['items'][] = array($label, substr($key, 0, -1), $icon);
-*/
               }
               break;
           }
@@ -98,7 +88,41 @@ class tx_jetts_templateSelector {
       }
     }
   }
-      
+
+  /**
+   * Gets the typoscript configuration, including those in the included basis templates
+   *
+   * @param	array	$row	The row in which the typoscript configuration are searched.
+   * @return	string The typoscript configuration
+   */
+  protected function getTyposcriptConfiguration($row) {
+    $typoscriptConfiguration = '';
+
+    if (is_array($row)) {
+      // Checks if there are included basis templates
+      if (!empty($row['basedOn'])) {
+
+        $includedBasisTemplates = explode(',', $row['basedOn']);
+        foreach($includedBasisTemplates as $includedBasisTemplate) {
+          $templateRow = t3lib_BEfunc::getRecordRaw(
+            'sys_template',
+            'uid=' . $includedBasisTemplate .
+            t3lib_BEfunc::BEenableFields('sys_template') .
+            t3lib_BEfunc::deleteClause('sys_template'),
+            'config,basedOn'
+          );
+          $typoscriptConfiguration .= $this->getTyposcriptConfiguration($templateRow);
+        }
+      }
+
+      // Checks if there is a TS configuration
+      if (!empty($row['config'])) {
+        $typoscriptConfiguration .= $row['config'];
+      }
+    }
+    return $typoscriptConfiguration;
+  }
+
 }
 
 
