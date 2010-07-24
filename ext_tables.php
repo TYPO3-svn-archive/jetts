@@ -127,6 +127,7 @@ if(!@is_file($jetts_ll_path.'ext_emconf.php')) {
 	/* create place-holder extension for localized files */
 	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/ext_emconf.php.skel',$jetts_ll_path.'ext_emconf.php');
 	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/locallang.xml.skel',$jetts_ll_path.'locallang.xml');
+	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/ext_icon.gif.skel',$jetts_ll_path.'ext_icon.gif');
 }
 
 // if extension folder created but extension is not loaded, warn user
