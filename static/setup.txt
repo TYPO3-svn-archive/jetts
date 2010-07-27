@@ -1,5 +1,5 @@
-lib.content.get = CONTENT
-lib.content.get {
+lib.jetts.content.get = CONTENT
+lib.jetts.content.get {
 	table = tt_content
 	select.orderBy = sorting
 	select.where = colPos=0

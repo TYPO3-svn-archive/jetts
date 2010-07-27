@@ -33,32 +33,40 @@ require_once (t3lib_extMgm::extPath('jetts') . 'pi/class.tx_jetts_parser.php');
  */
 class tx_jetts_pi extends tx_jetts_parser {
 
-  // Variables
-  public $conf;         // Configuration variable
+	// Variables
+	public $conf;         // Configuration variable
   
 	function main($content,$conf)	{
 
-    // get the key of the template
-		if (isset($conf['mapping'])) {
+		
+		
+		// get the template id from Typoscript or from page properties
+		if (isset($conf['mapping_id'])) {
 			$keyTemplate = $conf['mapping_id'];
 		} else {
 			$keyTemplate = $this->getkeyTemplate();
 		}
 		
+		// no template id found
 		if(!$keyTemplate) return '<h1>No template found</h1>';
 		
+		// fetch the template mapping
 		$mapping = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'*',
 			'tx_jetts_mapping',
 			'uid='.$keyTemplate.$this->cObj->enableFields('tx_jetts_mapping')
 		);
+
+		// create a temporary object for the mapping
 		$mapping = $mapping[0]['mapping'];
 		$mapping_id = md5($mapping);
 		$mapping = 'jetts_'.$mapping_id.' {'."\n".$mapping;
 		$mapping.= "\n".'}'."\n";
 
+		// parse mapping TS
 		$TSparser = t3lib_div::makeInstance('t3lib_TSparser');
 
+		// copy any existing TS object to mapping
 		if (is_array($GLOBALS['TSFE']->tmpl->setup)) {
 			foreach ($GLOBALS['TSFE']->tmpl->setup as $tsObjectKey => $tsObjectValue) {
 				if ($tsObjectKey !== intval($tsObjectKey)) {
@@ -66,18 +74,25 @@ class tx_jetts_pi extends tx_jetts_parser {
 				}
 			}
 		}
-		
+
 		$TSparser->parse($mapping);
-		$template = $this->parse($TSparser->setup['jetts_'.$mapping_id.'.']['template.']);
+		$parsedMapping = $TSparser->setup['jetts_'.$mapping_id.'.']['template.'];
+		$parsedMapping['cache'] = 0;
+		$parsedMapping['cache.']['addContentToHash'] = 0; // parser caching is not relevant since we are in a USER plugin
+		
+		$template = $this->parse($parsedMapping);
 		unset($TSparser->setup['jetts_'.$mapping_id.'.']['template.']);
 
+		// merge mapping config and plugin default config
 		$TEMPLATEConfig = array_merge(
 			array(
 				'template' => 'HTML',
 				'template.' => array('value' => $template)
 			),
-			$TSparser->setup['jetts_'.$mapping_id.'.']
+			$TSparser->setup['jetts_'.$mapping_id.'.'],
+			$conf
 		);
+
 		return $this->cObj->TEMPLATE($TEMPLATEConfig);
 		
 	}
@@ -86,16 +101,16 @@ class tx_jetts_pi extends tx_jetts_parser {
 	function getkeyTemplate() {
 
 		// if a mapping is defined on page returns it
-		if ($GLOBALS['TSFE']->page['tx_jetts_template'] != '') {
-			return $GLOBALS['TSFE']->page['tx_jetts_template'];
+		if ($GLOBALS['TSFE']->page['tx_jetts_template_mapping'] != '') {
+			return $GLOBALS['TSFE']->page['tx_jetts_template_mapping'];
 		} else {
 			// walks through rootline to find a mapping defined for a page or subpages
 			foreach ($GLOBALS['TSFE']->rootLine as $level) {
 				$p = $GLOBALS['TSFE']->sys_page->getPage($level['uid']);
-				if ($p['tx_jetts_subtemplate'] != '') {
-					return $p['tx_jetts_subtemplate'];
-				} elseif ($p['tx_jetts_template'] != '') {
-					return $p['tx_jetts_template'];
+				if ($p['tx_jetts_subtemplate_mapping'] != '') {
+					return $p['tx_jetts_subtemplate_mapping'];
+				} elseif ($p['tx_jetts_template_mapping'] != '') {
+					return $p['tx_jetts_template_mapping'];
 				}
 			}
 		}

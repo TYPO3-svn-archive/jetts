@@ -46,13 +46,12 @@
  *
  */
 
-
 define('TYPO3_MOD_PATH', '../typo3conf/ext/jetts/wizard/');
 
 $BACK_PATH='../../../../typo3/';
+
 require ($BACK_PATH.'init.php');
 require ($BACK_PATH.'template.php');
-$LANG->includeLLFile('EXT:jetts/locallang_db.xml');
 
 t3lib_BEfunc::lockRecords();
 
@@ -98,8 +97,10 @@ class SC_wizard_jetts {
 	 * @return	void
 	 */
 	function init()	{
+		
 			// Setting GPvars:
 		$this->P = t3lib_div::_GP('P');
+		$this->P['field'] = 'mapping_json';
 		$this->popView = t3lib_div::_GP('popView');
 		$this->R_URI = t3lib_div::linkThisScript(array('popView' => ''));
 
@@ -112,7 +113,7 @@ class SC_wizard_jetts {
 		
 		$this->doc->setModuleTemplate(TYPO3_MOD_PATH.'template.html');
 		$this->doc->divClass = '';	// Need to NOT have the page wrapped in DIV since if we do that we destroy the feature that the RTE spans the whole height of the page!!!
-		$this->doc->form='<form action="'.$GLOBALS['BACK_PATH'].'tce_db.php" method="post" enctype="'.$GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype'].'" name="editform" onsubmit="return TBE_EDITOR.checkSubmit(1);">';
+		$this->doc->form='<form action="'.$GLOBALS['BACK_PATH'].'tce_db.php" method="post" enctype="'.$GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype'].'" name="editform" id="TBE_EDITOR.formname" onsubmit="return TBE_EDITOR.checkSubmit(1);">';
 	}
 
 	/**
@@ -121,7 +122,7 @@ class SC_wizard_jetts {
 	 * @return	void
 	 */
 	function main()	{
-		global $BE_USER,$LANG;
+		global $BE_USER,$LANG,$BACK_PATH;
 
 			// translate id to the workspace version:
 		if ($versionRec = t3lib_BEfunc::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, $this->P['table'], $this->P['uid'], 'uid'))	{
@@ -158,7 +159,6 @@ class SC_wizard_jetts {
 					$LLList[] = array($key,$key);
 				}
 			}
-			
 			$TSparser = t3lib_div::makeInstance('t3lib_TSparser');
 			$TSparser->regComments = true;
 			$TSparser->parse($rec['mapping']);
@@ -174,18 +174,38 @@ class SC_wizard_jetts {
 							}
 						} else window.location.href = URL;
 					}
-					var htmlTemplate = \'/'.$rec['html'].'\';
-					var locallangFile = \'/'.$rec['llxml'].'\';
+					TBE_EDITOR.formname = "editform";
+					TBE_EDITOR.formnameUENC = "'.rawurlencode('editform').'";
+					var htmlTemplate = \''.t3lib_div::getIndpEnv('TYPO3_SITE_URL').$rec['html'].'\';
 					var LLList = '.((!empty($LLList) ? json_encode($LLList) : '[]')).'
 					var mapping_json = '.((json_decode($rec['mapping_json'])) ? $rec['mapping_json'].';' : '{tags:[],attrs:[]};')
 				.($this->popView ? t3lib_BEfunc::viewOnClick($rawRec['pid'],'',t3lib_BEfunc::BEgetRootLine($rawRec['pid'])) : '').'
-			');
+					
+'
+);
 			
 			$GLOBALS['TBE_STYLES']['extJS']['all'] = 'contrib/extjs/resources/css/ext-all.css';
 			$this->doc->getPageRenderer()->loadExtJS();
-			$this->loadJavaScript($this->relativePath . 'wizard/js/miframe-2.1.2.js');
-//			$this->loadJavaScript($this->relativePath . 'wizard/js/mifmsg-2.1.2.js');
-			$this->loadJavaScript($this->relativePath . 'wizard/js/wizard.js');
+			
+			if(t3lib_div::int_from_ver(TYPO3_version) >= 4004000) {
+				//$this->loadJavaScript($this->relativePath . 'wizard/js/miframe-2.1.2.js');
+				$this->doc->getPageRenderer()->addJsFile($BACK_PATH.$this->relativePath . 'wizard/js/miframe-2.1.2.js');
+			}else{
+				//$this->loadJavaScript($this->relativePath . 'wizard/js/miframe-2.0.1.js');
+				$this->doc->getPageRenderer()->addJsFile($BACK_PATH.$this->relativePath . 'wizard/js/miframe-2.0.1.js');
+			}
+			//$this->loadJavaScript($this->relativePath . 'wizard/js/wizard.js');
+			$this->doc->getPageRenderer()->addJsFile($BACK_PATH.$this->relativePath . 'wizard/js/wizard.js');
+			
+			// provide language labels to ExtJS
+			$llFile = t3lib_extMgm::extPath('jetts').'locallang_db.xml';
+			$LOCAL_LANG = $LANG->includeLLFile($llFile,0);
+			foreach($LOCAL_LANG['default'] as $key => $label) {
+				$ek = explode('.',$key);
+				if($ek[0] == 'tx_jetts_mapping' && $ek[1] == 'wizard')
+				$this->doc->getPageRenderer()->addInlineLanguageLabel($ek[2],$LANG->getLLL($key,$LOCAL_LANG));
+			}
+		
 
 				// Initialize TCeforms - for rendering the field:
 			$tceforms = t3lib_div::makeInstance('t3lib_TCEforms');
@@ -193,9 +213,6 @@ class SC_wizard_jetts {
 			$tceforms->disableWizards = 1;	// SPECIAL: Disables all wizards - we are NOT going to need them.
 			$tceforms->colorScheme[0]=$this->doc->bgColor;	// SPECIAL: Setting background color of the RTE to ordinary background
 
-				// Get the form field and wrap it in the table with the buttons:
-			//$formContent = $tceforms->getSoloField($this->P['table'],$rec,$this->P['field']);
-			
 			$config = array(
 				'config' => array(
 					'type' => 'text'
@@ -244,6 +261,7 @@ class SC_wizard_jetts {
 		// Setting up the buttons and markers for docheader
 		$docHeaderButtons = $this->getButtons();
 		$markers['CONTENT'] = $this->content;
+		$markers['NOTES'] = (trim($rec['notes']) != '') ? '<form><textarea style="width:100%; height:200px;">'.$rec['notes'].'</textarea></form>' : '' ;
 
 		// Build the <body> for the module
 		$this->content = $this->doc->startPage('');

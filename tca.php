@@ -4,7 +4,7 @@ if (!defined ('TYPO3_MODE'))     die ('Access denied.');
 $TCA['tx_jetts_mapping'] = array (
     'ctrl' => $TCA['tx_jetts_mapping']['ctrl'],
     'interface' => array (
-        'showRecordFieldList' => 'hidden,title,description,thumbnail,html,llxml,mapping_json,mapping'
+        'showRecordFieldList' => 'hidden,title,description,thumbnail,html,llxml,mapping_json,mapping,notes'
     ),
     'feInterface' => $TCA['tx_jetts_mapping']['feInterface'],
     'columns' => array (
@@ -53,13 +53,7 @@ $TCA['tx_jetts_mapping'] = array (
             'exclude' => 0,        
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.html',        
             'config' => array (
-                'type' => 'group',
-                'internal_type' => 'file',
-                'allowed' => 'html,htm,tmpl',    
-                'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],    
-                'uploadfolder' => '',
-                'minitems' => 1,
-                'maxitems' => 1,
+                'type' => 'input',
             )
         ),
         'llxml' => array (        
@@ -69,24 +63,11 @@ $TCA['tx_jetts_mapping'] = array (
                 'type' => 'input',
             )
         ),
-        'mapping' => array (        
+		'mapping' => array (        
             'exclude' => 0,        
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.mapping',        
             'config' => array (
-//				'type' => 'text',
-        		'type' => 'user',
-        		'pass_content' => '1',
-        		'userFunc' => 'user_jetts_wizard->main',
-        		'cols' => '30',
-                'rows' => '5'
-            )
-        ),
-		'mapping_json' => array (        
-            'exclude' => 0,        
-            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.mapping_json',        
-            'config' => array (
-//				'type' => 'text',
-        		'type' => 'passthrough',
+				'type' => 'text',
                 'wizards' => array(
                     'JETTS' => array(
                         'notNewRecords' => 1,
@@ -94,68 +75,31 @@ $TCA['tx_jetts_mapping'] = array (
                         'type'          => 'script',
                         'title'         => 'Jetts',
                         'icon'          => 'EXT:jetts/ext_icon.gif',
-                        'script'        => 'EXT:jetts/wizard/wizard.php',
+                        'script'        => 'EXT:jetts/wizard/wizard.php'
                     ),
-                )
+                ),
+        		'cols' => '30',
+                'rows' => '5'
             )
         ),
-		'header' => array (        
+        'mapping_json' => array (        
             'exclude' => 0,        
-            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.header',        
+            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.mapping_json',        
             'config' => array (
-                'type' => 'group',
-                'internal_type' => 'file',
-                'allowed' => 'html,htm,tmpl',    
-                'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],    
-                'uploadfolder' => '',
-                'size' => 1,    
-                'minitems' => 0,
-                'maxitems' => 1,
+				'type' => 'passthrough',
             )
         ),
-		'css' => array (        
+        'notes' => array (        
             'exclude' => 0,        
-            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.css',        
+            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.notes',        
             'config' => array (
-                'type' => 'group',
-                'internal_type' => 'file',
-                'allowed' => 'css',    
-                'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],    
-                'uploadfolder' => '',
-                'minitems' => 0,
-                'maxitems' => 99,
-            )
-        ),
-        'js' => array (        
-            'exclude' => 0,        
-            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.js',        
-            'config' => array (
-                'type' => 'group',
-                'internal_type' => 'file',
-                'allowed' => 'js',    
-                'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],    
-                'uploadfolder' => '',
-                'minitems' => 0,
-                'maxitems' => 99,
-            )
-        ),
-        'js_bottom' => array (        
-            'exclude' => 0,        
-            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.js_bottom',        
-            'config' => array (
-                'type' => 'group',
-                'internal_type' => 'file',
-                'allowed' => 'js',    
-                'max_size' => $GLOBALS['TYPO3_CONF_VARS']['BE']['maxFileSize'],    
-                'uploadfolder' => '',
-                'minitems' => 0,
-                'maxitems' => 99,
+                'type' => 'text',
             )
         ),
     ),
     'types' => array (
         '0' => array('showitem' => '
-        	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.general,hidden;;1;;1-1-1, title;;;;2-2-2, description;;;;3-3-3, thumbnail, html,
+        	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.general,hidden;;1;;1-1-1, title;;;;2-2-2, description;;;;3-3-3, thumbnail, html, notes,
         	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.mapping,mapping_json, mapping,
     		--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.ll,llxml'
     	)
@@ -164,8 +108,5 @@ $TCA['tx_jetts_mapping'] = array (
         '1' => array('showitem' => '')
     )
 );
-
-//   		--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.header,header,
-//  		--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.css_js,css,js,js_bottom,
 
 ?>

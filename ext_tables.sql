@@ -35,10 +35,7 @@ CREATE TABLE tx_jetts_mapping (
     llxml text,
     mapping text,
     mapping_json text,
-    header text,
-    css text,
-    js text,
-    js_bottom text
+    notes text,
     
     PRIMARY KEY (uid),
     KEY parent (pid)

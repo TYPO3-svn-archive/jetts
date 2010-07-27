@@ -46,7 +46,7 @@ if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 					array('', 0),
 				),
 				'foreign_table'       => 'tx_jetts_mapping',
-				'foreign_table_where' => 'AND (tx_jetts_mapping.pid=###STORAGE_PID### OR tx_jetts_mapping.pid IN (###PAGE_TSCONFIG_IDLIST###))',
+				'foreign_table_where' => ($_EXTCONF['useGRSP'] == '1') ? 'AND (tx_jetts_mapping.pid=###STORAGE_PID### OR tx_jetts_mapping.pid IN (###PAGE_TSCONFIG_IDLIST###))' : '',
 				'foreign_table_loadIcons' => true
 			)
 	    ),
@@ -59,16 +59,17 @@ if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 					array('', 0),
 				),
 				'foreign_table'       => 'tx_jetts_mapping',
-				'foreign_table_where' => 'AND (tx_jetts_mapping.pid=###STORAGE_PID### OR tx_jetts_mapping.pid IN (###PAGE_TSCONFIG_IDLIST###))',
+				'foreign_table_where' => ($_EXTCONF['useGRSP'] == '1') ? 'AND (tx_jetts_mapping.pid=###STORAGE_PID### OR tx_jetts_mapping.pid IN (###PAGE_TSCONFIG_IDLIST###))' : '',
 				'foreign_table_loadIcons' => true
 			)
 	    ),
 	);
-	
+
 	t3lib_extMgm::addStaticFile($_EXTKEY, 'static/', 'jetts');
 	
 	t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
 	t3lib_extMgm::addToAllTCAtypes('pages','--div--;Jetts,tx_jetts_template_mapping,tx_jetts_subtemplate_mapping');
+	
 }
 /*
  * END: instantiate wizard
@@ -193,6 +194,7 @@ if(t3lib_extMgm::isLoaded('user_jetts_ll') && $colPosLabels) {
 if(!@is_file($jetts_ll_path.'ext_emconf.php')) {
 	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/ext_emconf.php.skel',$jetts_ll_path.'ext_emconf.php');
 	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/locallang.xml.skel',$jetts_ll_path.'locallang.xml');
+	t3lib_div::upload_copy_move($thisPath.'res/user_jetts_ll/ext_icon.gif.skel',$jetts_ll_path.'ext_icon.gif');
 }
 
 // if extension folder is created but extension is not loaded, warn user

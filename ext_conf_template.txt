@@ -4,5 +4,8 @@ nbCols = 4
 	# cat=basic; type=boolean; label=Localize default columns with LLXML:The names of the 4 default column are partially localizable through core LLXML files. This feature enable you yo rename the default columns thanks to a localization extension (such as llxmltranslate of lfeditor), labels will be stored in typo3conf/ext/user_jetts_ll/locallang_db.xml
 localizeDefaultColumns = 1
 
-	# cat=compatibility; type=boolean; label=Enable Typoscript template selector:If you upgraded from a version of jetts lower than 2.2 and use plugin.tx_jetts_selector in your Typoscript you need to enable this, otherwise you are safe with the default value. Please note that if you are using a version of TYPO3 lower than 4.3 this template selector will be enabled whatever your selection.
+	# cat=advanced; type=boolean; label=Use "General record storage page" :By default you will be able to tie a mapping to a page wherever your jetts records are stored. If you activate this setting you will be able to use "General record storage page" or TSConfig to restrict where the template selector will look for jetts records.
+useGRSP = 0
+
+	# cat=advanced; type=boolean; label=Enable Typoscript template selector:If you upgraded from a version of jetts lower than 2.2 and use plugin.tx_jetts_selector in your Typoscript you need to enable this, otherwise you are safe with the default value. Please note that if you are using a version of TYPO3 lower than 4.3 this template selector will be enabled whatever your selection.
 enableTyposcriptSelector = 0

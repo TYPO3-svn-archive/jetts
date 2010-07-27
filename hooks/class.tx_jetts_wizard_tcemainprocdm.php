@@ -6,7 +6,8 @@ class tx_jetts_wizard_tcemainprocdm {
 		if(strpos($id,'NEW') === false) {
 			if($table == 'tx_jetts_mapping') {
 				$rec = t3lib_BEfunc::getRecord($table, $id);
-				if($mapping = json_decode($rec['mapping_json'])) {
+				$mapping = json_decode($rec['mapping_json']);
+				if(!is_null($mapping)) {
 					
 					$TS = '';
 					$TS .= 'template {'."\n";
@@ -36,7 +37,7 @@ class tx_jetts_wizard_tcemainprocdm {
 					
 					foreach($mapping->tags as $tag) {
 						if(intval($tag->type) == 1) {
-							$TS .= '  '.$tag->TSKey.' < lib.content.get'."\n";
+							$TS .= '  '.$tag->TSKey.' < lib.jetts.content.get'."\n";
 							$TS .= '  '.$tag->TSKey.'.select.where = colPos='.$tag->typoscript."\n";
 						}else{
 							$TS .= '  '.$tag->TSKey.' < '.$tag->typoscript."\n";
