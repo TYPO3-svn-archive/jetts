@@ -87,6 +87,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 		vIFrame.addListener(
 			'documentloaded', function(frameEl) { myObj.addIframeListeners(frameEl); }
 		);
+
 	},
 	
 	buildElementsGridPanel: function(fields,data,title,listName) {
@@ -178,22 +179,32 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 			{delegate:'a'}
 		);
 		frameEl.getDoc().on(
+			'click',
+			function(e,targetEl) {
+				myObj.addIframeClickEvents(e,targetEl);
+			}
+		);
+		frameEl.getDoc().on(
 			'contextmenu',
 			function(e,targetEl) {
-				e.stopEvent();
-//				var orig_xy = frameEl.getXY();
-				var xy = e.getXY();
-//				xy = [orig_xy[0]+xy[0],orig_xy[1]+xy[1]];
-				if(this.menu) this.menu.destroy();
-				this.menu = new Ext.menu.Menu({
-					id:'nodeContextMenu',
-					items: myObj.buildContextMenuItems(targetEl,this)
-				});
-				this.menu.showAt(xy);
+				myObj.addIframeClickEvents(e,targetEl);
 			}
 		);
 	},
-		
+	
+	addIframeClickEvents: function(e,targetEl) {
+		var myObj = this;
+
+		e.stopEvent();
+		var xy = e.getXY();
+		if(this.menu) this.menu.destroy();
+		this.menu = new Ext.menu.Menu({
+			id:'nodeContextMenu',
+			items: myObj.buildContextMenuItems(targetEl,this)
+		});
+		this.menu.showAt(xy);
+	},
+
 	getElementXPath: function(element) {
 		if (element && element.id) {
 			return '//'+element.localName+'[@id="' + element.id + '"]';
@@ -269,11 +280,6 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 			});
 			if(element.id) break;
 		}
-		
-		items.push({
-			text:TYPO3.lang.cancel
-		});
-		
 		
 		return items;
 	},
