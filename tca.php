@@ -54,6 +54,21 @@ $TCA['tx_jetts_mapping'] = array (
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.html',        
             'config' => array (
                 'type' => 'input',
+        		'eval' => 'trim',
+        		'wizards' => array(
+        			'_PADDING' => '2',
+        			'link_html' => array(
+        				'type' => 'popup',
+        				'title' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.html',
+        				'icon' => 'link_popup.gif',
+        				'script' => 'browse_links.php?mode=wizard&amp;act=file',
+        				'params' => array(
+        					'blindLinkOptions' => 'page,url,mail,spec,folder',
+        					'allowedExtensions' => 'htm,html,tmpl,tpl'
+        				),
+        				'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+        			)
+        		)
             )
         ),
         'llxml' => array (        
@@ -61,6 +76,23 @@ $TCA['tx_jetts_mapping'] = array (
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.llxml',        
             'config' => array (
                 'type' => 'input',
+        		'eval' => 'trim',
+        		'wizards' => array(
+        			'_PADDING' => '2',
+        			'link_xml' => array(
+        				'type' => 'popup',
+        				'title' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.llxml',
+        				'icon' => 'link_popup.gif',
+        				'script' => 'browse_links.php?mode=wizard&amp;act=file',
+        				'params' => array(
+        					'blindLinkOptions' => 'page,url,mail,spec',
+        					'allowedExtensions' => 'xml',
+        					'buttons.link.targetSelector.disabled' => 1,
+        					'buttons.link.popupSelector.disabled' => 1
+        				),
+        				'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+        			)
+        		)
             )
         ),
 		'mapping' => array (        

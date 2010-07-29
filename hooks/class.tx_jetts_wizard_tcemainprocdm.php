@@ -6,8 +6,27 @@ class tx_jetts_wizard_tcemainprocdm {
 		if(strpos($id,'NEW') === false) {
 			if($table == 'tx_jetts_mapping') {
 				$rec = t3lib_BEfunc::getRecord($table, $id);
+				
+				// clean paths to html and llxml files if a class or target has been added in the link wizard
+				$rec['html'] = t3lib_div::unQuoteFilenames(trim($rec['html']),true);
+				$rec['html'] = $rec['html'][0];
+				$rec['html'] = str_replace(t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT').'/','',t3lib_div::getFileAbsFileName($rec['html']));
+				$rec['llxml'] = t3lib_div::unQuoteFilenames(trim($rec['llxml']),true);
+				$rec['llxml'] = $rec['llxml'][0];
+				$rec['llxml'] = str_replace(t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT').'/','',t3lib_div::getFileAbsFileName($rec['llxml']));
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					'tx_jetts_mapping',
+					'uid='.$id,
+					array(
+						'html' => $rec['html'],
+						'llxml' => $rec['llxml'],
+					)
+				);
+
+				// build Typoscript
 				$mapping = json_decode($rec['mapping_json']);
 				if(!is_null($mapping)) {
+					
 					
 					$TS = '';
 					$TS .= 'template {'."\n";
@@ -60,7 +79,9 @@ class tx_jetts_wizard_tcemainprocdm {
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 						'tx_jetts_mapping',
 						'uid='.$id,
-						array('mapping' => $TS)
+						array(
+							'mapping' => $TS,
+						)
 					);
 				}
 			}		

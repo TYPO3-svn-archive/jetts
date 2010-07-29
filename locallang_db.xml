@@ -18,8 +18,8 @@
 			<label index="tx_jetts_mapping.title">Title</label>
 			<label index="tx_jetts_mapping.description">Description</label>
 			<label index="tx_jetts_mapping.thumbnail">Thumbnail</label>
-			<label index="tx_jetts_mapping.html">Path to Html file (e.g. fileadmin/templates/mytemplate.html)</label>
-			<label index="tx_jetts_mapping.llxml">Path to LLXML file (e.g. typo3conf/user_jetts_ll/locallang.xml)</label>
+			<label index="tx_jetts_mapping.html">Path to Html file (e.g. fileadmin/templates/mytemplate.html or EXT:myext/mytemplate.html)</label>
+			<label index="tx_jetts_mapping.llxml">Path to LLXML file (e.g. fileadmin/templates/mylocallang.xml or EXT:myext/mylocallang.xml)</label>
 			<label index="tx_jetts_mapping.mapping">Mapping preview (passed to Typoscript TEMPLATE object)</label>
 			<label index="tx_jetts_mapping.mapping_json">Wizard</label>
 			<label index="tx_jetts_mapping.notes">Notes</label>

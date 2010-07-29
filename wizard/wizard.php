@@ -146,12 +146,6 @@ class SC_wizard_jetts {
 			$rec['uid'] = $this->P['uid'];
 			$rec['pid'] = $rawRec['pid'];
 			
-			$rec['html'] = t3lib_div::trimExplode('|',$rec['html']);
-			$rec['html'] = urldecode($rec['html'][0]);
-			
-			$rec['llxml'] = t3lib_div::trimExplode('|',$rec['llxml']);
-			$rec['llxml'] = urldecode($rec['llxml'][0]);
-			
 			if($rec['llxml'] != '') {
 				$LL = $LANG->includeLLFile($rec['llxml'], 0);
 				$LLList = array();
