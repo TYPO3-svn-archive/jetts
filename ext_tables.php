@@ -16,7 +16,7 @@ $tempColumns = array (
         'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_template',        
         'config' => array (
             'type' => 'select',
-            'itemsProcFunc' => 'tx_jetts_templateSelector->main',
+            'itemsProcFunc' => 'tx_jetts_templateSelector->mainTemplateSelector',
             'items' => array(
             	'0' => ''
             ),
@@ -30,7 +30,7 @@ $tempColumns = array (
         'label' => 'LLL:EXT:jetts/locallang_db.xml:pages.tx_jetts_subtemplate',        
         'config' => array (
             'type' => 'select',
-            'itemsProcFunc' => 'tx_jetts_templateSelector->main',
+            'itemsProcFunc' => 'tx_jetts_templateSelector->subTemplateSelector',
             'items' => array(
             	'0' => ''
             ),

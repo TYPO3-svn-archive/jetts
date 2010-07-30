@@ -28,18 +28,26 @@ class tx_jetts_templateSelector {
 
 	public $prefix = 'Static: ';
 
-  public function main(&$params,&$pObj)    {
+  /**
+   * itemsProcFunc for the mainTemplate selector
+   *
+   * @param	array	$params
+   * @param	mixed	$pObj	.
+   * @return	none
+   */
+  public function mainTemplateSelector(&$params,&$pObj) {
 
     // Creates a local TS parser
-    $TSparser = t3lib_div::makeInstance('t3lib_TSparser');
+    $this->TSparser = t3lib_div::makeInstance('t3lib_TSparser');
     
     // Gets the page id
     $edit = t3lib_div::_GET('edit');
     $pages = $edit['pages'];
     $id = key($pages);
-    
+
     // Gets the rootLine
     $rootLine = t3lib_BEfunc::BEgetRootLine($id);
+    ksort($rootLine);
 
     // Gets the config for all pages in the rootline.
     unset($rootLine[0]);
@@ -50,45 +58,61 @@ class tx_jetts_templateSelector {
         'pid=' . $page['uid'] .
           t3lib_BEfunc::BEenableFields('sys_template') .
           t3lib_BEfunc::deleteClause('sys_template'),
-        'config,basedOn'
+        'constants,config,basedOn,include_static_file'
       );
 
       // Parses the config if it exists
-      $TSparser->parse($TSparser->checkIncludeLines(
+      $this->TSparser->parse(
         $this->getTyposcriptConfiguration($row)
-        )
       );
-
     }
 
     // Gets the plugin. part
-    $plugins = $TSparser->setup['plugin.'];
-          
+    $plugins = $this->TSparser->setup['plugin.'];
+
     // Gets the jetts_selector
     if (is_array($plugins['tx_jetts_selector.'])) {
+      // Intialises the selectors in pObj
+      $pObj->jettsSelectors = array(
+        'mainTemplate' => array(0 => ''),
+        'subTemplate' => array(0 => '')
+      );
+
       // Gets the label
       foreach ($plugins['tx_jetts_selector.'] as $key => $value) {
         $type = explode(',', $value['templateType']);
-        $icon = ($value['icon'] ? '../' . $value['icon'] : '');
+        $icon = $this->replaceTyposcriptConstants($value['icon']);
+        $icon = ($icon ? '../' . $icon : '');
+        $label = $this->replaceTyposcriptConstants($value['label']);
         foreach ($type as $valueType) {
           switch (trim($valueType)) {
             case 'sub':
-              if ($params['field'] == 'tx_jetts_subtemplate') {
-                $params['items'][] = array($pObj->sL($value['label']), substr($key, 0, -1), $icon);
-              }
+              $pObj->jettsSelectors['subTemplate'][] = array($pObj->sL($label), substr($key, 0, -1), $icon);
               break;
             case 'main':
             default:
-              if ($params['field'] == 'tx_jetts_template') {
-                $params['items'][] = array($pObj->sL($value['label']), substr($key, 0, -1), $icon);
-              }
+              $pObj->jettsSelectors['mainTemplate'][] = array($pObj->sL($label), substr($key, 0, -1), $icon);
               break;
           }
         }
       }
+      $params['items'] = $pObj->jettsSelectors['mainTemplate'];
     }
   }
 
+  /**
+   * itemsProcFunc for the subTemplate selector
+   *
+   * @param	array	$params
+   * @param	mixed	$pObj	.
+   * @return	none
+   */
+  public function subTemplateSelector(&$params,&$pObj) {
+    $params['items'] = $pObj->jettsSelectors['subTemplate'];
+    unset($pObj->jettsSelectors);
+  }
+  
+  
   /**
    * Gets the typoscript configuration, including those in the included basis templates
    *
@@ -99,9 +123,24 @@ class tx_jetts_templateSelector {
     $typoscriptConfiguration = '';
 
     if (is_array($row)) {
+      // Checks if there are TS contants
+      if (!empty($row['constants'])) {
+        $typoscriptConfiguration .= $row['constants'] . chr(10);
+      }
+
+      // Checks if there are included static files
+      if (!empty($row['include_static_file'])) {
+        $includedStaticFiles = explode(',', $row['include_static_file']);
+        foreach($includedStaticFiles as $includedStaticFile) {
+          $fileName =  t3lib_div::getFileAbsFileName($includedStaticFile) . 'setup.txt';
+          if (@is_file($fileName)) {
+            $typoscriptConfiguration .= $this->filterTyposcriptConfiguration(t3lib_div::getUrl($fileName));
+          }
+        }
+      }
+      
       // Checks if there are included basis templates
       if (!empty($row['basedOn'])) {
-
         $includedBasisTemplates = explode(',', $row['basedOn']);
         foreach($includedBasisTemplates as $includedBasisTemplate) {
           $templateRow = t3lib_BEfunc::getRecordRaw(
@@ -109,18 +148,48 @@ class tx_jetts_templateSelector {
             'uid=' . $includedBasisTemplate .
             t3lib_BEfunc::BEenableFields('sys_template') .
             t3lib_BEfunc::deleteClause('sys_template'),
-            'config,basedOn'
+            'constants,config,basedOn,include_static_file'
           );
           $typoscriptConfiguration .= $this->getTyposcriptConfiguration($templateRow);
         }
       }
-
+      
       // Checks if there is a TS configuration
       if (!empty($row['config'])) {
-        $typoscriptConfiguration .= $row['config'];
+        $typoscriptConfiguration .= $this->filterTyposcriptConfiguration($row['config']);
       }
     }
     return $typoscriptConfiguration;
+  }
+
+  /**
+   * Filter the typoscript configuration. It removes the typoscript if not related to tx_jetts_selector
+   *
+   * @param	string	$typoscript	The typoscript configuration to filter.
+   * @return	string The typoscript configuration
+   */
+  protected function filterTyposcriptConfiguration($typoscript) {
+    $typoscript = $this->TSparser->checkIncludeLines($typoscript);
+    if (preg_match('/tx_jetts_selector[\s\t\n\r]*\{/', $typoscript)) {
+      return $typoscript;
+    } else {
+      return '';
+    }
+  }
+
+  /**
+   * Replaces typoscript constants
+   *
+   * @param	string	$string String to process.
+   * @return	string The string with replaced constants if any
+   */
+
+  protected function replaceTyposcriptConstants($string) {
+    preg_match_all('/\{\$([^}]+)\}/', $string, $matches);
+    foreach ($matches[0] as $matchKey => $match) {
+      $string = str_replace($match, $this->TSparser->setup[$matches[1][$matchKey]], $string);
+    }
+    return $string;
   }
 
 }
