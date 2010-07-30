@@ -26,8 +26,12 @@
 			<label index="tx_jetts_mapping.tab.general">General</label>
 			<label index="tx_jetts_mapping.tab.mapping">Mapping</label>
 			<label index="tx_jetts_mapping.tab.ll">Automatic localisation</label>
-			<label index="tx_jetts_mapping.wizard.tagListTitle">Mapped tags</label>
-			<label index="tx_jetts_mapping.wizard.attrListTitle">Mapped attributes</label>
+			<label index="tx_jetts_mapping.wizard.templatePanel">HTML template</label>
+			<label index="tx_jetts_mapping.wizard.mappingPanel">Mappings</label>
+			<label index="tx_jetts_mapping.wizard.mappingTagPanel">Mapped tags</label>
+			<label index="tx_jetts_mapping.wizard.mappingAttrPanel">Mapped attributes</label>
+			<label index="tx_jetts_mapping.wizard.invisibleElPanel">Empty and self closing tags</label>
+			<label index="tx_jetts_mapping.wizard.notesPanel">Notes</label>
 			<label index="tx_jetts_mapping.wizard.GridColumnTitle">Title</label>
 			<label index="tx_jetts_mapping.wizard.GridColumnXpath">Xpath</label>
 			<label index="tx_jetts_mapping.wizard.GridColumnTyposcript">Typoscript</label>
@@ -70,17 +74,21 @@
 			<label index="tx_jetts_mapping.tab.general">Général</label>
 			<label index="tx_jetts_mapping.tab.mapping">Mapping</label>
 			<label index="tx_jetts_mapping.tab.ll">Traduction automatique</label>
-			<label index="tx_jetts_mapping.wizard.tagListTitle">Balises liées</label>
-			<label index="tx_jetts_mapping.wizard.attrListTitle">Attributs liés</label>
+			<label index="tx_jetts_mapping.wizard.templatePanel">template HTML </label>
+			<label index="tx_jetts_mapping.wizard.mappingPanel">Mappings</label>
+			<label index="tx_jetts_mapping.wizard.mappingTagPanel">Balises mappées</label>
+			<label index="tx_jetts_mapping.wizard.mappingAttrPanel">Attributs mappés</label>
+			<label index="tx_jetts_mapping.wizard.invisibleElPanel">Balises vides et auto-fermantes</label>
+			<label index="tx_jetts_mapping.wizard.notesPanel">Notes</label>
 			<label index="tx_jetts_mapping.wizard.GridColumnTitle">Titre</label>
 			<label index="tx_jetts_mapping.wizard.GridColumnXpath">Xpath</label>
 			<label index="tx_jetts_mapping.wizard.GridColumnTyposcript">Typoscript</label>
-			<label index="tx_jetts_mapping.wizard.GridColumnMappingType">Lié à</label>
+			<label index="tx_jetts_mapping.wizard.GridColumnMappingType">Mappé vers</label>
 			<label index="tx_jetts_mapping.wizard.fieldTitle">Titre</label>
 			<label index="tx_jetts_mapping.wizard.fieldColPos">Numéro de colonne</label>
 			<label index="tx_jetts_mapping.wizard.fieldLL">Libellé LLXML</label>
 			<label index="tx_jetts_mapping.wizard.fieldTyposcript">Typoscript</label>
-			<label index="tx_jetts_mapping.wizard.fieldMappingType">Lié à</label>
+			<label index="tx_jetts_mapping.wizard.fieldMappingType">Mappé vers</label>
 			<label index="tx_jetts_mapping.wizard.fieldPid">Id de la page</label>
 			<label index="tx_jetts_mapping.wizard.fieldXpath">Chemin xpath</label>
 			<label index="tx_jetts_mapping.wizard.delete">Supprimer</label>
@@ -91,8 +99,8 @@
 			<label index="tx_jetts_mapping.wizard.mappingType2">Objet Typoscript</label>
 			<label index="tx_jetts_mapping.wizard.mappingType3">Libellé LLXML</label>
 			<label index="tx_jetts_mapping.wizard.mappingType4">Lien vers une page</label>
-			<label index="tx_jetts_mapping.wizard.mapTag">Lier la balise</label>
-			<label index="tx_jetts_mapping.wizard.mapAttr">Lier l'attribut</label>
+			<label index="tx_jetts_mapping.wizard.mapTag">Mapper la balise</label>
+			<label index="tx_jetts_mapping.wizard.mapAttr">Mapper l'attribut</label>
 		</languageKey>
 	</data>
 </T3locallang>

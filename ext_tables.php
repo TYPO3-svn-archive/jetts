@@ -64,8 +64,6 @@ if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 			)
 	    ),
 	);
-
-	t3lib_extMgm::addStaticFile($_EXTKEY, 'static/', 'jetts');
 	
 	t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
 	t3lib_extMgm::addToAllTCAtypes('pages','--div--;Jetts,tx_jetts_template_mapping,tx_jetts_subtemplate_mapping');

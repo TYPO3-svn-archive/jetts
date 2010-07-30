@@ -170,7 +170,7 @@ class SC_wizard_jetts {
 					}
 					TBE_EDITOR.formname = "editform";
 					TBE_EDITOR.formnameUENC = "'.rawurlencode('editform').'";
-					var htmlTemplate = \''.t3lib_div::getIndpEnv('TYPO3_SITE_URL').$rec['html'].'\';
+					var htmlTemplate = \''.t3lib_div::getIndpEnv('TYPO3_SITE_URL').$rec['html'].'?'.uniqid().'\';
 					var LLList = '.((!empty($LLList) ? json_encode($LLList) : '[]')).'
 					var mapping_json = '.((json_decode($rec['mapping_json'])) ? $rec['mapping_json'].';' : '{tags:[],attrs:[]};')
 				.($this->popView ? t3lib_BEfunc::viewOnClick($rawRec['pid'],'',t3lib_BEfunc::BEgetRootLine($rawRec['pid'])) : '').'

@@ -14,6 +14,20 @@ if($_EXTCONF['enableTyposcriptSelector'] || (t3lib_div::int_from_ver(TYPO3_versi
 // instantiate the mapping wizard only if version of TYPO3 is above 4.3 (we need extJs)
 if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 	t3lib_extMgm::addPItoST43($_EXTKEY,'pi/class.tx_jetts_pi.php','_pi','',1);
+	t3lib_extMgm::addTypoScript(
+		$_EXTKEY,
+		'setup',
+		'
+		lib.jetts.content.get = CONTENT
+			lib.jetts.content.get {
+			table = tt_content
+			select.orderBy = sorting
+			select.where = colPos=0
+			select.languageField = sys_language_uid
+		}
+		',
+		43
+	);
 	$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = 'EXT:jetts/hooks/class.tx_jetts_wizard_tcemainprocdm.php:tx_jetts_wizard_tcemainprocdm';
 }
 

@@ -51,37 +51,90 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 	       {name: 'TSKey'}
 	    ];
 		
-		this.tagList = this.buildElementsGridPanel(storeFields,mapping_json.tags,TYPO3.lang.tagListTitle,'tagList');
-		this.attrList = this.buildElementsGridPanel(storeFields,mapping_json.attrs,TYPO3.lang.attrListTitle,'attrList');
+		this.tagList = this.buildElementsGridPanel(storeFields,mapping_json.tags,TYPO3.lang.mappingTagPanel,'tagList');
+		this.attrList = this.buildElementsGridPanel(storeFields,mapping_json.attrs,TYPO3.lang.mappingAttrPanel,'attrList');
 		
 		var vIFrame = new Ext.ux.ManagedIFrame.Panel({
 			id:'htmlTemplateFrame',
 			autoScroll: true,
 			defaultSrc: htmlTemplate,
-			title:'HTML template',
+			collapsible: true,
+			animCollapse: false,
+			titleCollapse: true,
+			title:TYPO3.lang.templatePanel,
 			margins: '35 0 0 0',
 			height: 500,
 		});
 
+		var ivstore = new Ext.data.ArrayStore({
+	        fields: [
+	           {name: 'tag'},
+	           {name: 'xptah'}
+	        ]
+	    });
+		
+		this.invisibleElements = new Ext.grid.GridPanel({
+			store: ivstore,
+			columns: [
+				{header: "Tag", dataIndex: 'tag', id: 'tag', renderer: function(element){
+					var path = [];
+					for (; element && element.nodeType == 1; element = element.parentNode) {
+						path.push(element.nodeName);
+						label = path.join(" < ");
+						if(element.id) label+="['@id='"+element.id+"]";
+						if(element.id && element.nodeName == 'DIV') break;
+					}
+					return label;
+				}},
+				{header: "Xpath", dataIndex: 'xpath', id:'xpath', width:300, renderer: function(element) {
+					return myObj.getElementXPath(element);
+				}}
+			],
+			sm: new Ext.grid.RowSelectionModel({
+                singleSelect: true,
+                listeners: {
+					rowselect: function(smObj, rowIndex, record) {
+					if(myObj.menu) myObj.menu.destroy();
+					myObj.menu = new Ext.menu.Menu({
+						id:'nodeContextMenu',
+						items: myObj.buildContextMenuItems(record.data.tag,this)
+					});
+					myObj.menu.show(myObj.invisibleElements.el);
+                    }
+               }
+            }),
+			id:'invisibleElements',
+			title: TYPO3.lang.invisibleElPanel,
+			collapsed: true,
+			collapsible: true,
+			animCollapse: false,
+			titleCollapse: true,
+			autoExpandColumn: 'tag'
+		});
+
 		var footer = new Ext.Panel({
 			layout:'column',
+			title: TYPO3.lang.mappingPanel,
+			collapsible: true,
+			animCollapse: false,
+			titleCollapse: true,
 			frame:false,
 			items: [this.tagList,this.attrList]
 		});
 		
 		var notes = new Ext.Panel({
-			layout:'column',
+			title: TYPO3.lang.notesPanel,
 			frame:false,
-			items: [{
-				title: 'Notes',
-				columnWidth: 1,
-				html: Ext.get('notes').dom.innerHTML
-			}]
+			collapsed: true,
+			collapsible: true,
+			animCollapse: false,
+			titleCollapse: true,
+			html: Ext.get('notes').dom.innerHTML
 		});
 		
 		var viewport = new Ext.Panel({
 			renderTo: 'extjs-iframe',
-			items: [vIFrame,footer,notes]
+			items: [vIFrame,this.invisibleElements,footer,notes]
 		});
 		
 		vIFrame.addListener(
@@ -190,6 +243,17 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 				myObj.addIframeClickEvents(e,targetEl);
 			}
 		);
+		
+    	var tags = frameEl.query("body *");
+    	Ext.each(tags,function(item){
+    		if(item.textContent.trim() == '') {
+    			myObj.updateGrid(myObj.invisibleElements,{tag:item,xpath:item});
+    		}
+    	});
+    	var scripts = frameEl.query("body script");
+    	Ext.each(scripts,function(item){
+			myObj.updateGrid(myObj.invisibleElements,{tag:item,xpath:item});
+    	});
 	},
 	
 	addIframeClickEvents: function(e,targetEl) {
@@ -197,12 +261,12 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 
 		e.stopEvent();
 		var xy = e.getXY();
-		if(this.menu) this.menu.destroy();
-		this.menu = new Ext.menu.Menu({
+		if(myObj.menu) myObj.menu.destroy();
+		myObj.menu = new Ext.menu.Menu({
 			id:'nodeContextMenu',
 			items: myObj.buildContextMenuItems(targetEl,this)
 		});
-		this.menu.showAt(xy);
+		myObj.menu.showAt(xy);
 	},
 
 	getElementXPath: function(element) {
@@ -278,7 +342,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 				text: label,
 				menu: { items: subitems }
 			});
-			if(element.id) break;
+			if(element.id && element.nodeName == 'DIV') break;
 		}
 		
 		return items;
@@ -453,9 +517,9 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 		if(typeof(rec) == 'undefined') {
 			var rt = store.recordType;
 			var r = new rt(values);
-			grid.stopEditing();
+			if(typeof grid.stopEditing == 'function') grid.stopEditing();
 			store.add(r);
-            grid.startEditing(0, 0);
+			if(typeof grid.startEditing == 'function') grid.startEditing(0, 0);
 		}else{
 			rec.data = values;
 			rec.commit();
