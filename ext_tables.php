@@ -65,6 +65,8 @@ if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 	    ),
 	);
 	
+	include_once($thisPath.'wizard/class.tx_jetts_wizard_subpart_selector.php');
+	
 	t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
 	t3lib_extMgm::addToAllTCAtypes('pages','--div--;Jetts,tx_jetts_template_mapping,tx_jetts_subtemplate_mapping');
 	

@@ -11,6 +11,7 @@ class tx_jetts_wizard_tcemainprocdm {
 				$rec['html'] = t3lib_div::unQuoteFilenames(trim($rec['html']),true);
 				$rec['html'] = $rec['html'][0];
 				$rec['html'] = str_replace(t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT').'/','',t3lib_div::getFileAbsFileName($rec['html']));
+
 				$rec['llxml'] = t3lib_div::unQuoteFilenames(trim($rec['llxml']),true);
 				$rec['llxml'] = $rec['llxml'][0];
 				$rec['llxml'] = str_replace(t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT').'/','',t3lib_div::getFileAbsFileName($rec['llxml']));
@@ -29,10 +30,16 @@ class tx_jetts_wizard_tcemainprocdm {
 					
 					
 					$TS = '';
+					$TS .= 'workOnSubpart = '.$rec['work_on_subpart']."\n\n";
+
+					$TS .= 'relPathPrefix = /'."\n";
+					$TS .= 'relPathPrefix.A = '."\n";
+					$TS .= 'relPathPrefix.IMG = '.dirname($rec['html'])."/\n\n";
+					
 					$TS .= 'template {'."\n";
 					$TS .= '  content = FILE'."\n";
 					$TS .= '  content.file = ' . $rec['html'] . "\n\n";
-					if(locallangFile != '/') $TS .= '    locallangFile = '. $rec['llxml'] . "\n\n";
+					if($rec['llxml'] != '') $TS .= '  locallangFile = '. $rec['llxml'] . "\n\n";
 					$TS .= '  subparts {'."\n";
 					$TS .= '    DOCUMENT_BODY = //body'."\n\n";
 					
@@ -51,7 +58,7 @@ class tx_jetts_wizard_tcemainprocdm {
 					reset($mapping->attrs);
 					$TS .= '  }'."\n";
 					$TS .= '}'."\n";
-					$TS .= 'workOnSubpart = DOCUMENT_BODY'."\n\n";
+
 					$TS .= 'subparts {'."\n";
 					
 					foreach($mapping->tags as $tag) {
@@ -75,6 +82,9 @@ class tx_jetts_wizard_tcemainprocdm {
 						}
 					}
 					$TS .= '}'."\n";
+					
+					$TS .= "\n\n# My Typoscript\n";
+					$TS .= $rec['ts_override'];
 					
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 						'tx_jetts_mapping',

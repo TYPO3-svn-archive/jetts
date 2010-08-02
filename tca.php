@@ -54,7 +54,8 @@ $TCA['tx_jetts_mapping'] = array (
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.html',        
             'config' => array (
                 'type' => 'input',
-        		'eval' => 'trim',
+        		'size' => '48',
+        		'eval' => 'required,trim',
         		'wizards' => array(
         			'_PADDING' => '2',
         			'link_html' => array(
@@ -76,6 +77,7 @@ $TCA['tx_jetts_mapping'] = array (
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.llxml',        
             'config' => array (
                 'type' => 'input',
+        		'size' => '48',
         		'eval' => 'trim',
         		'wizards' => array(
         			'_PADDING' => '2',
@@ -126,18 +128,49 @@ $TCA['tx_jetts_mapping'] = array (
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.notes',        
             'config' => array (
                 'type' => 'text',
-            )
+				'cols' => '50',
+                'rows' => '5'
+        	)
         ),
+        'work_on_subpart' => array(
+            'exclude' => 0,        
+            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.work_on_subpart',        
+	        'config' => array (
+	            'type' => 'select',
+	            'itemsProcFunc' => 'tx_jetts_wizard_subpart_selector->main',
+	            'items' => array(
+	            	array('DOCUMENT_BODY', 'DOCUMENT_BODY')
+	            ),
+	            'size' => 1,  
+	            'minitems' => 0,
+	            'maxitems' => 1,
+	        )
+        ),
+        'ts_override' => array(
+            'exclude' => 0,        
+            'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.ts_override',        
+            'config' => array (
+                'type' => 'text',
+        		'default' => '#
+# Example to override generated Typoscript
+#
+# relPathPrefix.IMG = http://static.mysite.com/fileadmin/default/templates/
+#
+',
+				'cols' => '50',
+                'rows' => '5'
+            )
+        )
     ),
     'types' => array (
         '0' => array('showitem' => '
-        	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.general,hidden;;1;;1-1-1, title;;;;2-2-2, description;;;;3-3-3, thumbnail, html, notes,
-        	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.mapping,mapping_json, mapping,
-    		--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.ll,llxml'
+        	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.general, hidden, title;;1;;, thumbnail, html, llxml,
+        	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.mapping, mapping, notes,
+    		--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.advanced,work_on_subpart,ts_override'
     	)
     ),
     'palettes' => array (
-        '1' => array('showitem' => '')
+        '1' => array('showitem' => 'description')
     )
 );
 

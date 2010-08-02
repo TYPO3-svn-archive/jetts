@@ -23,9 +23,12 @@
 			<label index="tx_jetts_mapping.mapping">Mapping preview (passed to Typoscript TEMPLATE object)</label>
 			<label index="tx_jetts_mapping.mapping_json">Wizard</label>
 			<label index="tx_jetts_mapping.notes">Notes</label>
+			<label index="tx_jetts_mapping.work_on_subpart">Work on subpart</label>
+			<label index="tx_jetts_mapping.ts_override">Override Typoscript</label>
 			<label index="tx_jetts_mapping.tab.general">General</label>
-			<label index="tx_jetts_mapping.tab.mapping">Mapping</label>
+			<label index="tx_jetts_mapping.tab.mapping">Mapping wizard</label>
 			<label index="tx_jetts_mapping.tab.ll">Automatic localisation</label>
+			<label index="tx_jetts_mapping.tab.advanced">Advanced</label>
 			<label index="tx_jetts_mapping.wizard.templatePanel">HTML template</label>
 			<label index="tx_jetts_mapping.wizard.mappingPanel">Mappings</label>
 			<label index="tx_jetts_mapping.wizard.mappingTagPanel">Mapped tags</label>
@@ -72,7 +75,7 @@
 			<label index="tx_jetts_mapping.mapping_json">Assistant</label>
 			<label index="tx_jetts_mapping.notes">Notes</label>
 			<label index="tx_jetts_mapping.tab.general">Général</label>
-			<label index="tx_jetts_mapping.tab.mapping">Mapping</label>
+			<label index="tx_jetts_mapping.tab.mapping">Assistant mapping</label>
 			<label index="tx_jetts_mapping.tab.ll">Traduction automatique</label>
 			<label index="tx_jetts_mapping.wizard.templatePanel">template HTML </label>
 			<label index="tx_jetts_mapping.wizard.mappingPanel">Mappings</label>
