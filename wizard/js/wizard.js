@@ -63,7 +63,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 			titleCollapse: true,
 			title:TYPO3.lang.templatePanel,
 			margins: '35 0 0 0',
-			height: 500,
+			height: 500
 		});
 
 		var ivstore = new Ext.data.ArrayStore({
@@ -109,6 +109,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 			collapsible: true,
 			animCollapse: false,
 			titleCollapse: true,
+			autoHeight: true,
 			autoExpandColumn: 'tag'
 		});
 
@@ -121,7 +122,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 			frame:false,
 			items: [this.tagList,this.attrList]
 		});
-		
+
 		var notes = new Ext.Panel({
 			title: TYPO3.lang.notesPanel,
 			frame:false,
@@ -129,7 +130,15 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 			collapsible: true,
 			animCollapse: false,
 			titleCollapse: true,
-			html: Ext.get('notes').dom.innerHTML
+			items: [new Ext.form.TextArea({
+				readOnly: true,
+				value: (Ext.get('notes').dom.hasChildNodes() == true) ? Ext.get('notes').dom.firstChild.nodeValue : '',
+				style: {
+		            width: '99%'
+		        },
+		        autoScroll: true,
+		        height: 300
+			})]
 		});
 		
 		var viewport = new Ext.Panel({
@@ -187,10 +196,10 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 	        columnWidth:.5,
 	        viewConfig: {
 	            autoFill: true,
-	            forceFit: true,
+	            forceFit: true
 	        },
 	        tbar: [{
-	            text: TYPO3.lang.delete,
+	            text: TYPO3.lang.bDelete,
 	            handler: function(btn, ev) {
 	                var index = myObj[listName].getSelectionModel().getSelectedCell();
 	                if (!index) {
@@ -199,11 +208,11 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 	                var rec = myObj[listName].getStore().getAt(index[0]);
 	                myObj[listName].getStore().remove(rec);
 	                myObj.storeMapping();
-	            },
+	            }
 	        },
 	        '-',
 	        {
-	            text: TYPO3.lang.edit,
+	            text: TYPO3.lang.bEdit,
 	            handler: function(btn, ev) {
 	                var index = myObj[listName].getSelectionModel().getSelectedCell();
 	                if (!index) {
@@ -211,8 +220,8 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 	                }
 	                var rec = myObj[listName].getStore().getAt(index[0]);
 	                myObj.displayMappingForm({store:rec.data,rec:rec});
-	            },
-	        }],
+	            }
+	        }]
 	    });
 		
 		return list;
@@ -246,7 +255,12 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 		
     	var tags = frameEl.query("body *");
     	Ext.each(tags,function(item){
-    		if(item.textContent.trim() == '') {
+    		if(typeof(item.textContent) == "undefined") {
+    			var t = item.innerText
+    		}else{
+    			var t = item.textContent
+    		}
+    		if(t.trim() == '') {
     			myObj.updateGrid(myObj.invisibleElements,{tag:item,xpath:item});
     		}
     	});
@@ -271,7 +285,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 
 	getElementXPath: function(element) {
 		if (element && element.id) {
-			return '//'+element.localName+'[@id="' + element.id + '"]';
+			return '//'+element.nodeName.toLowerCase()+'[@id="' + element.id + '"]';
 		}else{
 			return this.getElementTreeXPath(element);
 		}
@@ -291,11 +305,11 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 	 		   var index = 0;
 				for (var sibling = element.previousSibling; sibling; sibling = sibling.previousSibling)
 				{
-					if (sibling.localName == element.localName)
+					if (sibling.nodeName == element.nodeName)
 						++index;
 				}
 
-				var tagName = element.localName.toLowerCase();
+				var tagName = element.nodeName.toLowerCase();
 				var pathIndex = (index ? "[" + (index+1) + "]" : "");
 				paths.splice(0, 0, tagName + pathIndex);
 			}
@@ -327,7 +341,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 			}
 			for (var i in element.attributes) {
 				var at = element.attributes[i];
-				if(at.nodeType == 2 && at.nodeName != 'id') {
+				if(typeof(at) == 'object' && typeof(at.nodeValue) == 'string' && at.nodeValue.length > 0 && at.nodeName != 'id' && at.nodeName != 'contentEditable') {
 					subitems.push({
 						text: TYPO3.lang.mapAttr+' "'+at.nodeName+'"',
 						xpath: myObj.getElementXPath(element)+'/@'+at.nodeName,
@@ -435,7 +449,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 	        buttonAlign: 'center',
 	        items: form,
 	        buttons: [{
-	            text: TYPO3.lang.save,
+	            text: TYPO3.lang.bSave,
 	            handler: function() {
 	        		var storeGrid = (elType == 'tag') ? myObj.tagList : myObj.attrList;
 	        		var f = form.getForm();
@@ -474,7 +488,7 @@ TYPO3.Backend.t3Jetts = Ext.extend(Ext.Component, {
 	                w.close();
 	        	}
 	        },{
-	            text: TYPO3.lang.cancel,
+	            text: TYPO3.lang.bCancel,
 	            handler: function() {
 	            	w.close()
 	            }

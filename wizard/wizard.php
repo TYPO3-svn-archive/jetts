@@ -255,7 +255,7 @@ class SC_wizard_jetts {
 		// Setting up the buttons and markers for docheader
 		$docHeaderButtons = $this->getButtons();
 		$markers['CONTENT'] = $this->content;
-		$markers['NOTES'] = (trim($rec['notes']) != '') ? '<form><textarea style="width:100%; height:200px;">'.$rec['notes'].'</textarea></form>' : '' ;
+		$markers['NOTES'] = (trim($rec['notes']) != '') ? '<!--'.$rec['notes'].'-->' : '' ;
 
 		// Build the <body> for the module
 		$this->content = $this->doc->startPage('');
