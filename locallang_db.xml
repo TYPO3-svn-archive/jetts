@@ -23,6 +23,7 @@
 			<label index="tx_jetts_mapping.mapping">Mapping preview (passed to Typoscript TEMPLATE object)</label>
 			<label index="tx_jetts_mapping.mapping_json">Wizard</label>
 			<label index="tx_jetts_mapping.notes">Notes</label>
+			<label index="tx_jetts_mapping.show_columns">Columns visible in BE (leave empty for default behaviour)</label>
 			<label index="tx_jetts_mapping.work_on_subpart">Work on subpart</label>
 			<label index="tx_jetts_mapping.ts_override">Override Typoscript</label>
 			<label index="tx_jetts_mapping.tab.general">General</label>
@@ -74,6 +75,7 @@
 			<label index="tx_jetts_mapping.mapping">Prévisualisation du mapping (tel que passé à l'objet Typoscript "TEMPLATE")</label>
 			<label index="tx_jetts_mapping.mapping_json">Assistant</label>
 			<label index="tx_jetts_mapping.notes">Notes</label>
+			<label index="tx_jetts_mapping.show_columns">Colonnes visibles dans le BE (laisser vide pour laisser pour le comportement par défaut)</label>
 			<label index="tx_jetts_mapping.tab.general">Général</label>
 			<label index="tx_jetts_mapping.tab.mapping">Assistant mapping</label>
 			<label index="tx_jetts_mapping.tab.ll">Traduction automatique</label>

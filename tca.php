@@ -4,7 +4,7 @@ if (!defined ('TYPO3_MODE'))     die ('Access denied.');
 $TCA['tx_jetts_mapping'] = array (
     'ctrl' => $TCA['tx_jetts_mapping']['ctrl'],
     'interface' => array (
-        'showRecordFieldList' => 'hidden,title,description,thumbnail,html,llxml,mapping_json,mapping,notes'
+        'showRecordFieldList' => 'hidden,title,description,thumbnail,html,llxml,mapping_json,mapping,notes,work_on_subpart,ts_override,show_columns'
     ),
     'feInterface' => $TCA['tx_jetts_mapping']['feInterface'],
     'columns' => array (
@@ -132,12 +132,23 @@ $TCA['tx_jetts_mapping'] = array (
                 'rows' => '5'
         	)
         ),
+        'show_columns' => array (        
+	        'exclude' => 0,        
+	        'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.show_columns',        
+	        'config' => array (
+	            'type' => 'select',
+	            'itemsProcFunc' => 'tx_jetts_wizard_tce->getColumns',
+	            'size' => 10,  
+	            'minitems' => 0,
+	            'maxitems' => 99,
+	        )
+	    ),
         'work_on_subpart' => array(
             'exclude' => 0,        
             'label' => 'LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.work_on_subpart',        
 	        'config' => array (
 	            'type' => 'select',
-	            'itemsProcFunc' => 'tx_jetts_wizard_subpart_selector->main',
+	            'itemsProcFunc' => 'tx_jetts_wizard_tce->getSubparts',
 	            'items' => array(
 	            	array('DOCUMENT_BODY', 'DOCUMENT_BODY')
 	            ),
@@ -166,7 +177,7 @@ $TCA['tx_jetts_mapping'] = array (
         '0' => array('showitem' => '
         	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.general, hidden, title;;1;;, thumbnail, html, llxml,
         	--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.mapping, mapping, notes,
-    		--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.advanced,work_on_subpart,ts_override'
+    		--div--;LLL:EXT:jetts/locallang_db.xml:tx_jetts_mapping.tab.advanced,show_columns,work_on_subpart,ts_override'
     	)
     ),
     'palettes' => array (

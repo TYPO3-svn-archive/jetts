@@ -65,11 +65,11 @@ if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 	    ),
 	);
 	
-	include_once($thisPath.'wizard/class.tx_jetts_wizard_subpart_selector.php');
+	include_once($thisPath.'wizard/class.tx_jetts_wizard_tce.php');
 	
 	t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
 	t3lib_extMgm::addToAllTCAtypes('pages','--div--;Jetts,tx_jetts_template_mapping,tx_jetts_subtemplate_mapping');
-	
+
 }
 /*
  * END: instantiate wizard
@@ -186,6 +186,18 @@ if(t3lib_extMgm::isLoaded('user_jetts_ll') && $colPosLabels) {
 }
 /*
  * END: add new columns to TCA if necessary
+ */
+
+/*
+ * BEGIN: control columns display from jetts mapping record
+ */
+if(t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
+	t3lib_extMgm::addPageTSConfig('
+	    '.tx_jetts_wizard_tce::getPageTSconfig().'
+	');
+}
+/*
+ * END: control columns display from jetts mapping record
  */
 
 /*

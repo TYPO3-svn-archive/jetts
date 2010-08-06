@@ -38,6 +38,7 @@ CREATE TABLE tx_jetts_mapping (
     notes text,
     work_on_subpart tinytext,
     ts_override tinytext,
+    show_columns tinytext NOT NULL,
     
     PRIMARY KEY (uid),
     KEY parent (pid)
